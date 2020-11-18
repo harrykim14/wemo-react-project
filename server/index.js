@@ -30,6 +30,10 @@ app.get('/', (req, res) => {
   res.send('Hello NodeMon!!')
 })
 
+app.post('/product', (req, res) =>{
+  console.log('req.body :', req.body);
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
