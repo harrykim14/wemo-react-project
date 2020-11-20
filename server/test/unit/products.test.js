@@ -33,7 +33,7 @@ beforeEach(() => {
     req = httpMocks.createRequest();
     res = httpMocks.createResponse();
       // httpMocks를 사용하여 request, response를 생성
-    next = null;
+    next = jest.fn();
 
     req.body = newProduct;
 })
@@ -66,5 +66,15 @@ describe("Product Controller Create", () => {
       expect(res._getJSONData()).toStrictEqual(newProduct);
       // _getJSONData는 httpMocks에서 제공하는 메서드로 JSON.parse(response._getData())의 축약형임
   });
-  
+
+  it("should handle error", async () => {
+      // 몽고 DB로 처리하는 부분은 정상적으로 처리(에러 발생 또한 정상적으로 몽고 DB에서 처리하는 것)한다고 가정
+      const errorMessage = { message : "description property missing"};
+      // 에러 메세지는 임의로 생성
+      const rejectedPromise = Promise.reject(errorMessage);
+      // 비동기 결과값은 성공시에 Promise.resolve로, 실패하면 Promise.reject로 처리된다
+      productModel.create.mockReturnValue(rejectedPromise);
+      await productController.createProduct(req, res, next);
+      expect(next).toBeCalledWith(errorMessage);
+  })
 })
