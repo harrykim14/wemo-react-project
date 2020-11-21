@@ -26,7 +26,6 @@ app.get('/', (req, res) => {
 });
 // '/'라는 경로로 요청이 오면 response로 'Hello Node.js Server!'전달
 
-
 const productRoute = require('./routes');
 app.use("/product", productRoute)
 // 해당 접근이 있으면 라우터로 보냄 라우터의 기본 주소가 /product이므로
@@ -36,3 +35,4 @@ app.use("/product", productRoute)
 app.listen(PORT, HOST); // 해당 포트와 호스트에서 HTTP 서버를 시작
 console.log(`Running on http://${HOST}:${PORT}`) // 다 끝나면 콘솔로 해당 호스트와 포트를 출력
 
+module.exports = app;
