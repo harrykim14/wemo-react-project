@@ -1,10 +1,7 @@
 // Product Controller
 
+const Product = require('../models/Product');
 const productModel = require('../models/Product');
-
-exports.basic = (req, res) => {
-    res.send("Product의 기본 페이지 로딩")
-}
 
 exports.createProduct = async (req, res, next) => {
     try {
@@ -18,4 +15,8 @@ exports.createProduct = async (req, res, next) => {
         next(error);
     }
 
+}
+
+exports.getProduct = async (req, res, next) => {
+        await productModel.find({});
 }

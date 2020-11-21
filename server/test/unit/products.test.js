@@ -27,6 +27,8 @@ const httpMocks = require('node-mocks-http');
 const newProduct = require('../data/new-product.json');
 
 productModel.create= jest.fn();
+productModel.find = jest.fn();
+// Mocking function으로 대체하기
 
 let req, res, next;
 beforeEach(() => {
@@ -77,4 +79,15 @@ describe("Product Controller Create", () => {
       await productController.createProduct(req, res, next);
       expect(next).toBeCalledWith(errorMessage);
   })
+})
+
+describe("Product Controller Get", () => {
+    it("should have a getProducts functions", () => {
+        expect(typeof productController.getProduct).toBe("function");
+    })
+
+    it("should call ProductModel.find({})", async () => {
+        await productController.getProduct(req, res, next);
+        expect(productModel.find).toHaveBeenCalledWith({});
+    })
 })
