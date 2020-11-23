@@ -1,0 +1,19 @@
+[
+    {
+        "name" : "Memo",
+        "description" : "Sample Product",
+        "price" : 30000
+    },
+
+    {
+        "name" : "Memo",
+        "description" : "Sample Product",
+        "price" : 50000
+    },
+
+    {
+        "name" : "Memo",
+        "description" : "Sample Product",
+        "price" : 10000
+    }
+]
