@@ -1,6 +1,5 @@
 // Product Controller
 
-const Product = require('../models/Product');
 const productModel = require('../models/Product');
 
 exports.createProduct = async (req, res, next) => {
@@ -36,5 +35,17 @@ exports.getProductById = async (req, res, next) => {
         }
     } catch (error){
         next(error);
+    }
+}
+
+exports.updateProduct = async (req, res, next) => {
+    try {
+        await productModel.findByIdAndUpdate(
+            req.params.productId,
+            req.body,
+            { new : true }
+        );
+    } catch (error) {
+        next(error)
     }
 }

@@ -31,6 +31,7 @@ const idProduct = require('../data/id-product.json');
 productModel.create= jest.fn();
 productModel.find = jest.fn();
 productModel.findById = jest.fn();
+productModel.findByIdAndUpdate = jest.fn();
 // Mocking function으로 대체하기
 
 let req, res, next;
@@ -152,5 +153,20 @@ describe("Product Controller GetById", () => {
         productModel.findById.mockReturnValue(rejectedPromise);
         await productController.getProductById(req, res, next);
         expect(next).toHaveBeenCalledWith(errorMessage);
+    })
+})
+
+describe("Product Controller Update", () => {
+    it ("should have an updateProduct function", () =>{
+        expect(typeof productController.updateProduct).toBe("function");
+    })
+
+    it("should call productModel.findByIdAndUpdate", async () => {
+        req.params.productId = idProduct;
+        req.body = { name : "updated name", description : "updated description" };
+        await productController.updateProduct(req, res, next);
+        expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
+            idProduct, { name : "updated name", description : "updated description"} , {new : true}
+        )
     })
 })
