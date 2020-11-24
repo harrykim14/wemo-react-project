@@ -32,6 +32,7 @@ productModel.create= jest.fn();
 productModel.find = jest.fn();
 productModel.findById = jest.fn();
 productModel.findByIdAndUpdate = jest.fn();
+productModel.findByIdAndDelete = jest.fn();
 // Mocking function으로 대체하기
 
 let req, res, next;
@@ -156,6 +157,8 @@ describe("Product Controller GetById", () => {
     })
 })
 
+const updatedProduct = { name : "updated name", description : "updated description" };
+
 describe("Product Controller Update", () => {
     it ("should have an updateProduct function", () =>{
         expect(typeof productController.updateProduct).toBe("function");
@@ -163,10 +166,77 @@ describe("Product Controller Update", () => {
 
     it("should call productModel.findByIdAndUpdate", async () => {
         req.params.productId = idProduct;
-        req.body = { name : "updated name", description : "updated description" };
+        req.body = updatedProduct;
         await productController.updateProduct(req, res, next);
         expect(productModel.findByIdAndUpdate).toHaveBeenCalledWith(
-            idProduct, { name : "updated name", description : "updated description"} , {new : true}
+            idProduct, updatedProduct, {new : true}
         )
+    })
+
+    it("should return json body and response code 200", async () => {
+        req.params.productId = idProduct;
+        req.body = updatedProduct;
+        productModel.findByIdAndUpdate.mockReturnValue(updatedProduct);
+        await productController.updateProduct(req, res, next);
+
+        expect(res._isEndCalled()).toBeTruthy();
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toStrictEqual(updatedProduct);
+    })
+
+    it("should handle 404 when item doesnt exsist", async () => {
+        productModel.findByIdAndUpdate.mockReturnValue(null);
+        await productController.updateProduct(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+        // 컨트롤러에서 .send()로 error를 보내야 truthy 함수에서 true를 받아 처리할 수 있다
+    })
+
+    it ("should handle errors", async () => {
+        const errorMessage = { message : "update error"};
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.findByIdAndUpdate.mockReturnValue(rejectedPromise);
+        await productController.updateProduct(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    })
+})
+
+describe('Product Controller Delete', () => {
+
+    it("should have delete product function", () => {
+        expect(typeof productController.deleteProduct).toBe("function");
+    })
+    
+    it("should call productModel.findByIdAndDelete", async () => {
+        req.params.productId = idProduct;
+        await productController.deleteProduct(req, res, next);
+        expect(productModel.findByIdAndDelete).toHaveBeenCalledWith(idProduct);
+    })
+
+    it("should return 200 response and json body", async () => {
+        let deletedProduct = {
+            name : "Deleted Product",
+            description : "Deleted Product Description"
+        }
+        productModel.findByIdAndDelete.mockReturnValue(deletedProduct)
+        await productController.deleteProduct(req, res, next);
+        expect(res.statusCode).toBe(200)
+        expect(res._getJSONData()).toStrictEqual(deletedProduct);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
+
+    it("should return handle 404 when item doesnt exsist", async () => {
+        productModel.findByIdAndDelete.mockReturnValue(null);
+        await productController.deleteProduct(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
+
+    it("should handle errors", async () => {
+        const errorMessage = { message : "Product Delete Error"};
+        const rejectedPromise = Promise.reject(errorMessage);
+        productModel.findByIdAndDelete.mockReturnValue(rejectedPromise);
+        await productController.deleteProduct(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
     })
 })
