@@ -26,11 +26,13 @@ app.get('/', (req, res) => {
 });
 // '/'라는 경로로 요청이 오면 response로 'Hello Node.js Server!'전달
 
-const productRoute = require('./routes');
-app.use("/product", productRoute)
+const route = require('./routes');
+app.use("/product", route)
 // 해당 접근이 있으면 라우터로 보냄 라우터의 기본 주소가 /product이므로
 // 라우터 내 기본 경로 + a 와 같이 처리하게 될 것
 // 라우터에서 이 경로를 처리하게 할 것이기 때문에 아래와 같이 처리
+app.use("/user", route)
+
 
 app.use((error, req, res, next) => {
     res.status(500).json({message : error.message})

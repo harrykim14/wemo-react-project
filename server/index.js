@@ -34,6 +34,10 @@ app.post('/product', (req, res) =>{
   console.log('req.body :', req.body);
 })
 
+app.post('/user',(req, res) => {
+  console.log('req.body :', req.body);
+})
+
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
