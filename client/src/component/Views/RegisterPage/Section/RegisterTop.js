@@ -1,15 +1,10 @@
-import React from 'react';
+import React from 'react'
 import { Typography } from '@material-ui/core';
 import CropSquareIcon from '@material-ui/icons/CropSquare';
 import CloseIcon from '@material-ui/icons/Close';
 import MinimizeIcon from '@material-ui/icons/Minimize';
-
-function LoginTop() {
-    const thisYear = new Date().getFullYear() - 2000;
-    const thisMonth = new Date().getMonth()+1;
-    const thisDate = new Date().getDate();
-    const today = `${thisYear}.${thisMonth < 10 ? '0'+thisMonth : thisMonth}.${thisDate<10 ? '0'+thisDate : thisDate}.`
-    const iconStyle = { float: 'right'};
+const iconStyle = { float: 'right'};
+function RegisterTop() {
     return (
         <div style = {{ 
             border: '2px solid black',
@@ -22,7 +17,7 @@ function LoginTop() {
             }}>
                 <Typography variant ={'body1'} 
                             style = {{fontWeight: '700', fontSize: '1.2rem'}}>
-                    {today}
+                    회원가입을 하시려면 아래 양식에 맞춰 입력해주세요.
                     <CloseIcon style = {iconStyle}/>
                     <CropSquareIcon style = {iconStyle}/>
                     <MinimizeIcon style = {iconStyle}/>
@@ -31,4 +26,4 @@ function LoginTop() {
     )
 }
 
-export default LoginTop
+export default RegisterTop

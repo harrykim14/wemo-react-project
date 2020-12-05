@@ -1,9 +1,12 @@
 import React from 'react'
+import RegisterTop from './Section/RegisterTop';
+import RegisterMain from './Section/RegisterMain';
 
 function RegisterPage() {
     return (
         <div>
-            RegisterPage
+            <RegisterTop />
+            <RegisterMain />
         </div>
     )
 }

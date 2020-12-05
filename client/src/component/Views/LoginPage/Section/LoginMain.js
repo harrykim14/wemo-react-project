@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { TextField , Button } from "@material-ui/core";
-import WeMoLogo200 from './pics/WemoLogo_200px.png'
-import WeMoLogo400 from './pics/WemoLogo_400px.png'
+import WeMoLogo200 from '../../../../Images/WemoLogo_200px.png'
+import WeMoLogo400 from '../../../../Images/WemoLogo_400px.png'
 
 function LoginMain() {
 
