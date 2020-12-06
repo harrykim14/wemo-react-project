@@ -9,7 +9,7 @@ router.get('/:productId', productController.getProductById);
 router.put('/:productId', productController.updateProduct);
 router.delete('/:productId', productController.deleteProduct);
 
-router.post('/register', userController.createUser);
+router.post('/user/register', userController.createUser);
 
 module.exports = router;
 // Router.use() requires a middleware function

@@ -17,18 +17,26 @@ const userSchema = new mongoose.Schema({
         unique: 1
     },
 
+    useremail : {
+        type: String
+    },
+
     password : {
         type: String,
         minlength: 5
     },
+
     role: {
         type:Number,
         default : 0
     },
+
     image : String,
+
     token : {
         type: String,
     },
+    
     tokenExp: {
         type: Number
     }
