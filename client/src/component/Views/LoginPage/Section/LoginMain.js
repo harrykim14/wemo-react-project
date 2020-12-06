@@ -3,12 +3,14 @@ import { TextField , Button } from "@material-ui/core";
 import WeMoLogo200 from '../../../../Images/WemoLogo_200px.png'
 import WeMoLogo400 from '../../../../Images/WemoLogo_400px.png'
 
-function LoginMain() {
+function LoginMain(props) {
 
     const [logo, setLogo] = useState(WeMoLogo400);
     useEffect(() => {
         (window.innerWidth > 480) ? setLogo(WeMoLogo400) : setLogo(WeMoLogo200);
     }, [])
+
+    
 
     return (
         <div style= {{ border : '2px solid black', height: '70vh', margin: '0vh 5vh 0vh 5vh', borderTopColor:'white', borderRadius:'0px 0px 5px 5px'}}>
@@ -18,7 +20,7 @@ function LoginMain() {
                     <TextField label="아이디" required /><br/>
                     <TextField label="비밀번호" required /><br/><br/>
                     <Button variant="outlined">로그인</Button>&nbsp;
-                    <Button variant="outlined">회원가입</Button>
+                    <Button variant="outlined" href='/register'>회원가입</Button>
                 </form>
             </div>
         </div>
