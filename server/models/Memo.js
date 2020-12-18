@@ -10,6 +10,10 @@ const memoSchema = mongoose.Schema({
         type: Number,
         unique: 1
     },
+    memoCategory : {
+        type: String,
+        required: true
+    },
     height: {
         type:String,
         default: '250px'
@@ -45,6 +49,9 @@ const memoSchema = mongoose.Schema({
     zIndex: {
         type:Number,
         default: 999
+    },
+    createDate:{
+        type: Date,
     }
 })
 
