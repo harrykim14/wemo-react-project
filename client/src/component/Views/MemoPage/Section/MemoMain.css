@@ -1,13 +1,26 @@
 .MemoBox {
-    padding: 10px;
+    padding: 1rem;
     border: 1px solid black;
     border-radius:5px 5px;
     box-shadow: 3px 3px #888888;
 }
+
+.MemoBox > textarea {
+    resize: none;  
+    width: 98%; 
+    height: 70%;
+    border: 0px none white;
+    background-color:transparent
+}
+
+.MemoBox > textarea:focus{
+    outline: none;
+}
+
 .PaletteModal {
     position: absolute;
-    width : 220px;
-    height: 75px;
+    width : 200px;
+    height: 70px;
     padding: 10px;
     border: 1px solid gray;
     border-radius: 3px;
@@ -15,4 +28,13 @@
     box-shadow: 1px 1px #888888;
     text-align: center;
     z-index: 999;
+}
+
+.Star, .StarBorder, .Lock, .LockOpen, .Palette, .Delete {
+    cursor: pointer;
+}
+
+.MemoSaveButton {
+    float:right;
+    width: 80px;
 }

@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react'
-import Header from '../Header/Header';
+import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
 
-function MemoPage() {
+function MemoPage(props) {
 
     let exampleMemo = [
-        { height: '250px', width: '250px', x: 30, y: 30, bgColor: '#F2D7B6', memoNum : 0, memoContext: 'MemoContext', memoLocked: false, memoImport: true, zIndex: 50},
-        { height: '250px', width: '250px', x: 300, y: 30, bgColor: '#EBF2B6', memoNum : 1, memoContext: 'MemoContext', memoLocked: true, memoImport: false, zIndex: 51},
-    ]
-    const [MemoCategory, setMemoCategory] = useState('');
-    const [MemoProps, setMemoProps] = useState([]);
+        { height: '250px', width: '250px', x: 30, y: 70, bgColor: '#F2D7B6', 
+          memoNum : 0, memoContext: 'useState에 대해 알아보았어요', memoCategory : 'study', 
+          memoLocked: false, memoImport: true, zIndex: 50, createDate: '12월 17일'},
+        { height: '250px', width: '250px', x: 300, y: 70, bgColor: '#EBF2B6', 
+          memoNum : 1, memoContext: '다이어트는 내일부터', memoCategory : 'workout',
+          memoLocked: true, memoImport: false, zIndex: 51, createDate: '12월 17일'},
+        ]
 
-    useEffect(() => {
-        setMemoProps(exampleMemo);
-        // eslint-disable-next-line
-    }, [])
+    const [MemoCategory, setMemoCategory] = useState('study');
+    const [MemoProps, setMemoProps] = useState(exampleMemo);    
 
-    const categoryHandler = (categoryName) => {
-        setMemoCategory(categoryName);
+    useEffect(() => {       
+     },[MemoProps])  
+
+    const categoryHandler = (nowCategory) => {
+        console.log("nav에서 누른 값:",nowCategory);
+        setMemoCategory(prevCategory => nowCategory);
     }
 
     const memoPropChangeHandler = (data) => {
@@ -68,32 +72,64 @@ function MemoPage() {
         }
     }
 
+    const newMemoHandler = () => {
+        /* 이미 있는 메모들을 돌며 z-index를 모든 메모보다 최대치로 설정하기 */
+        let zidx = 0;
+        let memoNum = 0;
+        MemoProps.forEach(memo => {
+            if(memo.zIndex > zidx) zidx = memo.zIndex + 1
+            if(memo.memoNum > memoNum) memoNum = memo.memoNum + 1
+        })
+        console.log("z-index of new memo: ",zidx);
+        console.log("New memo's number: ",memoNum);
+
+        /* 오늘 날짜를 구해서 Date값을 형식에 맞춰 만들기 */
+        let now = new Date();
+        let createDate = `${(now.getMonth() < 10)? '0'+(now.getMonth()+1): now.getMonth()+1}월 ${(now.getDate() < 10) ? '0'+now.getDate(): now.getDate()}일`
+        console.log(createDate)
+        /* 새 메모를 디폴트 위치에 생성 */
+        MemoProps.push({ height: '250px', width: '250px', 
+                         x: 30, y: 30, bgColor: '#b6f2cb', 
+                         memoNum : memoNum, memoContext: '새 메모', 
+                         memoCategory : MemoCategory,
+                         memoLocked: false, memoImport: false, 
+                         zIndex: zidx, createDate: createDate});
+        setMemoProps(prevProps => [...MemoProps]);
+    }
+
     const PositionChangeHandle = (locX, locY, memoNum) => {
-        exampleMemo[memoNum].x = locX;
-        exampleMemo[memoNum].y = locY;
-        setMemoProps(exampleMemo);
+        console.log("locX: ",locX," locY: ", locY, " Category:", MemoCategory)
+        let idx = MemoProps.findIndex(memo => memo.memoNum === memoNum)
+        console.log("지금 움직이는 메모 index: ", idx)
+        MemoProps[idx].x = locX;
+        MemoProps[idx].y = locY;
+        setMemoProps(prevProps => [...MemoProps]);
     }
 
     const SizeChangeHandle = (x, y, w, h, memoNum) => {
-        console.log("memoWidth:", w, " memoHeight:", h)
-        exampleMemo[memoNum].x = x;
-        exampleMemo[memoNum].y = y;
-        exampleMemo[memoNum].width = w;
-        exampleMemo[memoNum].height = h;
-        setMemoProps(exampleMemo);
+        console.log("memoWidth:", w, " memoHeight:", h, " Category", MemoCategory)
+        let idx = MemoProps.findIndex(memo => memo.memoNum === memoNum)
+        MemoProps[idx].x = x;
+        MemoProps[idx].y = y;
+        MemoProps[idx].width = w;
+        MemoProps[idx].height = h;
+        setMemoProps(prevProps => [...MemoProps]);
     }
 
     return (
         <div>
-            <Header nowCategory={categoryHandler}/>
-            <div style = {{ height: '82vh'}}>
-            <MemoMain 
-                memoCategory={MemoCategory} 
-                memoProps={MemoProps}
-                memoPropChange={memoPropChangeHandler}
-                PositionChangeHandle = {PositionChangeHandle}
-                SizeChangeHandle = {SizeChangeHandle}
-            />
+                <NavBar 
+                    nowCategory={categoryHandler}
+                    newMemoHandler ={newMemoHandler}
+                />
+            <div style = {{ height: '85vh'}}>
+                <MemoMain 
+                    memoCategory={MemoCategory} 
+                    memoProps={MemoProps}
+                    memoPropChange={memoPropChangeHandler}                    
+                    PositionChangeHandle = {PositionChangeHandle}
+                    SizeChangeHandle = {SizeChangeHandle}
+                />
             </div>
         </div>
     )

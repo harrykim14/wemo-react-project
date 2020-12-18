@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
+import { useHistory } from "react-router-dom";
 import { TextField , Button } from "@material-ui/core";
 import Checkbox from '@material-ui/core/Checkbox';
 import Terms from '../TermsData/TermsData.json';
 import Axios from 'axios';
 
-function RegisterMain() {
+function RegisterMain(props) {
 
+    let history = useHistory();
     const [UserId, setUserId] = useState('');
     const [UserName, setUserName] = useState('');
     const [UserEmail, setUserEamil] = useState('');
@@ -43,6 +45,10 @@ function RegisterMain() {
     // }
     const registerUserFunction = (event) => {
         event.preventDefault();
+        if(!TermAgreement) {
+            alert('회원약관에 동의해주세요.')
+            return false;
+        }
 
         if(UserId && UserName && UserEmail && UserPassword && ConfirmPassword) {
             let body = {
@@ -51,10 +57,14 @@ function RegisterMain() {
                 useremail : UserEmail,
                 password : UserPassword
             }
-            Axios.post('/api/user/register', body)
+            Axios.post('/api/userRegister', body)
                 .then(response => {
+                    console.log(response.data)
                     if(response.data.success) {
-                        
+                        alert('회원가입에 성공하였습니다. 로그인 페이지로 이동합니다.')
+                        setTimeout(() => {                            
+                            history.push('/')
+                        }, 2000);
                     } else {
                         alert('회원가입에 실패하였습니다. 다시 시도해주세요.')
                     }
@@ -68,7 +78,7 @@ function RegisterMain() {
             setConfirmPassword('')
         }
 
-        if(!TermAgreement) alert('회원약관에 동의해주세요.')
+        
 
         console.log("form contexts" ,UserId, UserName, UserEmail, UserPassword, ConfirmPassword)
     }
