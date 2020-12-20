@@ -14,3 +14,12 @@ exports.createMemo = async (req, res, next) => {
         next(error);
     }
 }
+
+exports.getMemos = async (req, res, next) => {
+    try {
+        const writtenMemos = await memoModel.find(req.params.userid) 
+        res.status(200).json({success: true, writtenMemos});
+    } catch(error){
+        next(error);
+    }
+}

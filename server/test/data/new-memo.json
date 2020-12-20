@@ -1,0 +1,6 @@
+{ "height": "250px", "width": "250px", 
+    "x": 30, "y": 30, "bgColor": "#b6f2cb", 
+    "memoNum" : 3, "memoContext": "새 메모", 
+    "memoCategory" : "study",
+    "memoLocked": false, "memoImport": false, 
+    "zIndex": 56, "createDate": "12월 20일"}
