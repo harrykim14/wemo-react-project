@@ -1,5 +1,6 @@
 [
-  { "height": "250px", 
+  { "userid" : "testUser",
+    "height": "250px", 
     "width": "250px",
     "x": 30, "y": 70, 
     "bgColor": "#F2D7B6", 
@@ -10,7 +11,8 @@
     "zIndex": 50, 
     "createDate": "12월 17일"
     },
-  { "height": "250px", 
+  { "userid" : "testUser",
+    "height": "250px", 
     "width": "250px",
     "x": 300, "y": 70, 
     "bgColor": "#EBF2B6", 
