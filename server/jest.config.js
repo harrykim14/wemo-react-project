@@ -1,5 +1,6 @@
 module.exports = {
     testEnvironment : "node",
+    clearMocks: true,
 }
 
 // Mongoose: looks like you're trying to test a Mongoose app with Jest's default jsdom test environment.

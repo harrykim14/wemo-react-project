@@ -26,21 +26,75 @@ exports.getMemos = async (req, res, next) => {
 
 exports.moveMemo = async(req, res, next) => {
     try{
-        const updateMemoLocation = await memoModel.findOneAndUpdate(
-            { $and: { userid: req.params.userid, memoNum: req.params.memoNum }},
+        const  updateMemoLocation = await memoModel.findOneAndUpdate(
+            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
             { $set: {  x: req.params.x, y: req.params.y}},
             { new: true }
         )
 
-        console.log("updateMemoLocation", updateMemoLocation);
+        // console.log("updateMemoLocation", updateMemoLocation);
 
-        if(updateMemoLocation) {
-            res.status(200).json(updateMemoLocation);
-        } else {
-            res.status(404).send();
-        }
+        if(updateMemoLocation) 
+            res.status(200).json(updateMemoLocation) 
+        else 
+            res.status(404).send()
+    
 
     } catch(error) {
         next(error)
+    }
+}
+
+exports.resizeMemo = async(req, res, next) => {
+    try{
+        const updateMemoSize = await memoModel.findOneAndUpdate(
+            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $set: { height: req.params.height, width: req.params.width }},
+            { new: true }
+        )
+
+        if(updateMemoSize) 
+            res.status(200).json(updateMemoSize) 
+        else
+            res.status(404).send()
+
+    } catch(error) {
+        next(error)
+    }
+}
+
+exports.rewriteMemo = async(req, res, next) => {
+    try { 
+        const updateMemoContext = await memoModel.findOneAndUpdate(
+            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $set: { memoContext: req.params.memoContext }},
+            { new : true }
+        )
+
+        if(updateMemoContext) 
+            res.status(200).json(updateMemoContext)
+        else 
+            res.status(404).send()
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+exports.paintMemo = async(req, res, next) => {
+    try { 
+        const paintMemo = await memoModel.findOneAndUpdate(
+            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $set: { bgColor: req.params.bgColor }},
+            { new : true }
+        )
+
+        if(paintMemo) 
+            res.status(200).json(paintMemo)
+        else 
+            res.status(404).send()
+
+    } catch(error) {
+        next(error);
     }
 }

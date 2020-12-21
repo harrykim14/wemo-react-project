@@ -46,6 +46,10 @@ const memoSchema = mongoose.Schema({
         type:Boolean,
         default: false
     },
+    memoTrash:{
+        type:Boolean,
+        default: false
+    },
     zIndex: {
         type:Number,
         default: 999
