@@ -17,7 +17,7 @@ exports.createMemo = async (req, res, next) => {
 
 exports.getMemos = async (req, res, next) => {
     try {
-        const writtenMemos = await memoModel.find(req.params.userid) 
+        const writtenMemos = await memoModel.find(req.params.userId) 
         res.status(200).json(writtenMemos);
     } catch(error){
         next(error);
@@ -27,7 +27,7 @@ exports.getMemos = async (req, res, next) => {
 exports.moveMemo = async(req, res, next) => {
     try{
         const  updateMemoLocation = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
             { $set: {  x: req.params.x, y: req.params.y}},
             { new: true }
         )
@@ -48,7 +48,7 @@ exports.moveMemo = async(req, res, next) => {
 exports.resizeMemo = async(req, res, next) => {
     try{
         const updateMemoSize = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
             { $set: { height: req.params.height, width: req.params.width }},
             { new: true }
         )
@@ -66,7 +66,7 @@ exports.resizeMemo = async(req, res, next) => {
 exports.rewriteMemo = async(req, res, next) => {
     try { 
         const updateMemoContext = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
             { $set: { memoContext: req.params.memoContext }},
             { new : true }
         )
@@ -84,7 +84,7 @@ exports.rewriteMemo = async(req, res, next) => {
 exports.paintMemo = async(req, res, next) => {
     try { 
         const paintMemo = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userid, memoNum: req.params.memoNum }},
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
             { $set: { bgColor: req.params.bgColor }},
             { new : true }
         )
@@ -93,6 +93,90 @@ exports.paintMemo = async(req, res, next) => {
             res.status(200).json(paintMemo)
         else 
             res.status(404).send()
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+exports.changeLockStateMemo = async(req, res, next) => {
+    try { 
+        if(req.params.memoLocked){
+            const lockMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoLocked: true }},
+                { new: true })
+            if (lockMemo) 
+                res.status(200).json(lockMemo);
+            else 
+                res.status(404).send();
+        } else {
+            const unlockMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoLocked: false }},
+                { new: true }
+            )
+            if(unlockMemo)
+                res.status(200).json(unlockMemo);
+            else 
+                res.status(404).send();
+        }
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+exports.changeMarkStateMemo = async(req, res, next) => {
+    try { 
+        if(req.params.memoImport){
+            const markMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoImport: true }},
+                { new: true })
+            if (markMemo) 
+                res.status(200).json(markMemo);
+            else 
+                res.status(404).send();
+        } else {
+            const unmarkMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoImport: false }},
+                { new: true }
+            )
+            if(unmarkMemo)
+                res.status(200).json(unmarkMemo);
+            else 
+                res.status(404).send();
+        }
+
+    } catch(error) {
+        next(error);
+    }
+}
+
+exports.throwOrRestoreMemo = async(req, res, next) => {
+    try { 
+        if(req.params.memoTrash){
+            const throwMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoTrash: true }},
+                { new: true })
+            if (throwMemo) 
+                res.status(200).json(throwMemo);
+            else 
+                res.status(404).send();
+        } else {
+            const restoreMemo = await memoModel.findOneAndUpdate(
+                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+                { $set: { memoTrash: false }},
+                { new: true }
+            )
+            if(restoreMemo)
+                res.status(200).json(restoreMemo);
+            else 
+                res.status(404).send();
+        }
 
     } catch(error) {
         next(error);

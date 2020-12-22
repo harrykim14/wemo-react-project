@@ -5,11 +5,9 @@
     "x": 30, "y": 70, 
     "bgColor": "#F2D7B6", 
     "memoNum" : 0, "memoContext": "useState에 대해 알아보았어요", 
-    "memoCategory" : "study", 
-    "memoLocked": false, 
-    "memoImport": true, 
-    "zIndex": 50, 
-    "createDate": "12월 17일"
+    "memoCategory" : "study", "memoTrash" : false,
+    "memoLocked": false, "memoImport": true, 
+    "zIndex": 50, "createDate": "12월 17일"
     },
   { "userid" : "testUser",
     "height": "250px", 
@@ -17,7 +15,7 @@
     "x": 300, "y": 70, 
     "bgColor": "#EBF2B6", 
     "memoNum" : 1, "memoContext": "다이어트는 내일부터", 
-    "memoCategory" : "workout",
+    "memoCategory" : "workout", "memoTrash" : false,
     "memoLocked": true, "memoImport": false, 
     "zIndex": 51, "createDate": "12월 17일"
     }

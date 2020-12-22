@@ -16,6 +16,12 @@ router.post('/userRegister', userController.createUser);
 router.post('/createMemo', memoController.createMemo);
 router.get('/getMemos/:userid', memoController.getMemos);
 router.post('/moveMemo', memoController.moveMemo);
+router.post('/resizeMemo', memoController.resizeMemo);
+router.post('/rewriteMemo', memoController.rewriteMemo);
+router.post('/paintMemo', memoController.paintMemo);
+router.post('/lockOrUnlock', memoController.changeLockStateMemo);
+router.post('/markOrUnmark', memoController.changeMarkStateMemo);
+router.post('/throwOrRestore', memoController.throwOrRestoreMemo)
 
 
 module.exports = router;
