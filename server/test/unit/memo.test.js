@@ -451,3 +451,12 @@ describe("Memo can be delete or restore", () => {
 })
 
 /* 메모 내용을 기반으로한 검색 테스트 코드 */
+
+describe("User can search written memo", () => {
+    it("should have findWrittenMemo function", () => {
+        expect(typeof memoController.findWrittenMemo).toEqual("function");
+    })
+
+})
+
+/* 메모가 휴지통에 있을 때 삭제하면 완전삭제되도록 하기 */

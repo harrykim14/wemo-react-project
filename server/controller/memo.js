@@ -182,3 +182,25 @@ exports.throwOrRestoreMemo = async(req, res, next) => {
         next(error);
     }
 }
+
+exports.findWrittenMemo = async (req, res, next) => {
+    try {
+        // get방식을 사용할 것이기 때문에 searchWord는 쿼리문으로 받아올 것
+        let searchWord = req.params.s;
+        // find 메서드는 정규식을 이용하여 검색
+        const result = await memoModel.find({memoContext: new RegExp(searchWord, 'i')}).exec()
+
+            if(!result) {
+                res.status(404).send();
+            } else {
+                if (result.length >= 1) {
+                    res.status(200).json(result)
+                } else {
+                    res.status(200).send("해당하는 메모가 없습니다.")
+                }
+            }            
+
+    } catch(error) {
+        next(error);
+    }  
+}

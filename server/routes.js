@@ -21,7 +21,8 @@ router.post('/rewriteMemo', memoController.rewriteMemo);
 router.post('/paintMemo', memoController.paintMemo);
 router.post('/lockOrUnlock', memoController.changeLockStateMemo);
 router.post('/markOrUnmark', memoController.changeMarkStateMemo);
-router.post('/throwOrRestore', memoController.throwOrRestoreMemo)
+router.post('/throwOrRestore', memoController.throwOrRestoreMemo);
+
 
 
 module.exports = router;
