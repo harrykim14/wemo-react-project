@@ -44,6 +44,9 @@ beforeEach(() => {
 
     // throwOrRestore용 파라미터
     req.params.memoTrash = true;
+
+    // findWrittenMemo용 파라미터
+    req.params.s = "운동"
 })
 
 /* 새 메모를 클릭했을 때 새로 메모를 생성하는 api 테스트 코드 */
@@ -457,6 +460,12 @@ describe("User can search written memo", () => {
         expect(typeof memoController.findWrittenMemo).toEqual("function");
     })
 
+    it("should call findWrittenMemo.find", async () => {
+        const memoContext = {memoContext: new RegExp(req.params.s, 'i')}
+        await memoController.findWrittenMemo(req, res, next);
+        expect(memoModel.find).toBeCalledWith(memoContext); 
+    })
+    
 })
 
 /* 메모가 휴지통에 있을 때 삭제하면 완전삭제되도록 하기 */
