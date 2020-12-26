@@ -10,6 +10,7 @@ const newMemo = require('../data/new-memo.json');
     memoModel.find = jest.fn();
     memoModel.update = jest.fn();
     memoModel.findOneAndUpdate = jest.fn();    
+    memoModel.findOneAndDelete = jest.fn();    
 
 let req, res, next;
 
@@ -454,7 +455,17 @@ describe("Memo can be delete or restore", () => {
 })
 
 /* 메모 내용을 기반으로한 검색 테스트 코드 */
-
+const searchedMemo = 
+[{ "userid" : "testUser",
+"height": "250px", 
+"width": "250px",
+"x": 300, "y": 70, 
+"bgColor": "#EBF2B6", 
+"memoNum" : 1, "memoContext": "다이어트는 내일부터", 
+"memoCategory" : "workout", "memoTrash" : false,
+"memoLocked": true, "memoImport": false, 
+"zIndex": 51, "createDate": "12월 17일"
+}]
 describe("User can search written memo", () => {
     it("should have findWrittenMemo function", () => {
         expect(typeof memoController.findWrittenMemo).toEqual("function");
@@ -465,7 +476,69 @@ describe("User can search written memo", () => {
         await memoController.findWrittenMemo(req, res, next);
         expect(memoModel.find).toBeCalledWith(memoContext); 
     })
-    
+
+   it("should return json body and response code 200", async () => {
+       memoModel.find.mockReturnValue(searchedMemo);
+       await memoController.findWrittenMemo(req, res, next);
+       expect(res.statusCode).toBe(200);
+       expect(res._getJSONData()).toStrictEqual(searchedMemo);
+       expect(res._isEndCalled()).toBeTruthy();
+   })
+
+   it("should return 404 when memo is not exist", async () => {
+       memoModel.find.mockReturnValue(null);
+       await memoController.findWrittenMemo(req, res, next);
+       expect(res.statusCode).toBe(404);
+       expect(res._isEndCalled()).toBeTruthy();
+   })
+
+   it("should handle errors", async () => {
+       const errorMessage = { message : "couldnt find memo because of some error"};
+       const rejectedPromise = Promise.reject(errorMessage);
+       memoModel.find.mockReturnValue(rejectedPromise);
+       await memoController.findWrittenMemo(req, res, next);
+       expect(next).toHaveBeenCalledWith(errorMessage);
+   })
 })
 
 /* 메모가 휴지통에 있을 때 삭제하면 완전삭제되도록 하기 */
+describe("User can delete memo when it trashed once", () => {
+    it("should have deleteMemo function", () => {
+        expect(typeof memoController.deleteMemo).toEqual("function")
+    })
+
+    // 메모 완전삭제는 body로 userId와 memoNum을 받음
+    it("should call findOneAndDelete function", async () => {
+        await memoController.deleteMemo(req, res, next);
+        expect(memoModel.findOneAndDelete).toHaveBeenCalledWith(
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }}
+        );
+    })
+
+    // 메모가 완전히 삭제되면 statusCode 404를 받고
+    it("should return statusCode 404 when successfully delete", async () => {
+        let deleteFlag =  { $and: { userId: req.params.userId, memoNum: req.params.memoNum }};
+        memoModel.findOneAndDelete.mockReturnValue(deleteFlag);
+        await memoController.deleteMemo(req, res, next);
+        expect(res.statusCode).toBe(200);
+        expect(res._getJSONData()).toStrictEqual(deleteFlag);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
+
+    // 삭제가 원활히 이루어지지 않다면 200을 받는다
+    it("should return statusCode 404 when successfully delete", async () => {
+        memoModel.findOneAndDelete.mockReturnValue(null);
+        await memoController.deleteMemo(req, res, next);
+        expect(res.statusCode).toBe(404);
+        expect(res._isEndCalled()).toBeTruthy();
+    })
+
+    // 삭제 도중 에러가 발생하면 처리할 수 있어야 한다
+    it("should handle error", async () => {
+        const errorMessage = { message : "Have a problem for deleting memo"}
+        const rejectedPromise = Promise.reject(errorMessage);
+        memoModel.findOneAndDelete.mockReturnValue(rejectedPromise);
+        await memoController.deleteMemo(req, res, next);
+        expect(next).toHaveBeenCalledWith(errorMessage);
+    })
+})

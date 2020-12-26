@@ -188,8 +188,8 @@ exports.findWrittenMemo = async (req, res, next) => {
         // get방식을 사용할 것이기 때문에 searchWord는 쿼리문으로 받아올 것
         let searchWord = req.params.s;
         // find 메서드는 정규식을 이용하여 검색
-        const result = await memoModel.find({memoContext: new RegExp(searchWord, 'i')}).exec()
-
+        const result = await memoModel.find({memoContext: new RegExp(searchWord, 'i')})
+        
             if(!result) {
                 res.status(404).send();
             } else {
@@ -199,6 +199,22 @@ exports.findWrittenMemo = async (req, res, next) => {
                     res.status(200).send("해당하는 메모가 없습니다.")
                 }
             }            
+
+    } catch(error) {
+        next(error);
+    }  
+}
+
+exports.deleteMemo = async (req, res, next) => {
+    try {
+        const delResult = await memoModel.findOneAndDelete(
+            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }}
+        )
+            console.log("delResult", delResult);
+        if(delResult)
+            res.status(200).json(delResult)
+        else 
+            res.status(404).send();
 
     } catch(error) {
         next(error);
