@@ -6,8 +6,6 @@ exports.createMemo = async (req, res, next) => {
     try {
     const createMemo = await memoModel.create(req.body);
     // console.log("createMemo", createMemo)
-    // createProduct Promise { <pending> } 이라고 나오는 이유는 처리방식이 비동기방식이기 때문임
-    // async, await를 사용하여 비동기를 동기화시킴
     res.status(201).json(createMemo)
     // 객체 데이터들은 대부분 json형식으로 send하게 된다
     } catch (error) {
@@ -25,10 +23,19 @@ exports.getMemos = async (req, res, next) => {
 }
 
 exports.moveMemo = async(req, res, next) => {
+    //{ userId: req.params.userId, memoNum: req.params.memoNum }
+    //{  x: req.params.x, y: req.params.y}
+
+    console.log(req.body)
+    // 12-27: 쿼리문으로 직접 보내는 req.params.xxx에서 req.body로 변경, 나중엔 memoNum에서 memoId로 변경해야 함
+    let searchFlag = { userId: req.body.userId, memoNum: req.body.memoNum }
+    // Mongoose 업데이트로 $and 쿼리가 사라짐
+    let setProps = { $set: {  x: req.body.x, y: req.body.y}};
+
     try{
         const  updateMemoLocation = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
-            { $set: {  x: req.params.x, y: req.params.y}},
+            searchFlag,
+            setProps, // 상동
             { new: true }
         )
 

@@ -7,8 +7,7 @@ const memoSchema = mongoose.Schema({
         required: true
     },
     memoNum: {
-        type: Number,
-        unique: 1
+        type: Number
     },
     memoCategory : {
         type: String,
@@ -55,7 +54,7 @@ const memoSchema = mongoose.Schema({
         default: 999
     },
     createDate:{
-        type: Date,
+        type: String,
     }
 })
 
