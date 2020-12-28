@@ -23,10 +23,7 @@ exports.getMemos = async (req, res, next) => {
 }
 
 exports.moveMemo = async(req, res, next) => {
-    //{ userId: req.params.userId, memoNum: req.params.memoNum }
-    //{  x: req.params.x, y: req.params.y}
 
-    console.log(req.body)
     // 12-27: 쿼리문으로 직접 보내는 req.params.xxx에서 req.body로 변경, 나중엔 memoNum에서 memoId로 변경해야 함
     let searchFlag = { userId: req.body.userId, memoNum: req.body.memoNum }
     // Mongoose 업데이트로 $and 쿼리가 사라짐
@@ -39,13 +36,10 @@ exports.moveMemo = async(req, res, next) => {
             { new: true }
         )
 
-        // console.log("updateMemoLocation", updateMemoLocation);
-
         if(updateMemoLocation) 
             res.status(200).json(updateMemoLocation) 
         else 
             res.status(404).send()
-    
 
     } catch(error) {
         next(error)
@@ -55,8 +49,8 @@ exports.moveMemo = async(req, res, next) => {
 exports.resizeMemo = async(req, res, next) => {
     try{
         const updateMemoSize = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
-            { $set: { height: req.params.height, width: req.params.width }},
+           { userId: req.body.userId, memoNum: req.body.memoNum },
+            { $set: { height: req.body.height, width: req.body.width }},
             { new: true }
         )
 
@@ -73,8 +67,8 @@ exports.resizeMemo = async(req, res, next) => {
 exports.rewriteMemo = async(req, res, next) => {
     try { 
         const updateMemoContext = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
-            { $set: { memoContext: req.params.memoContext }},
+           { userId: req.body.userId, memoNum: req.body.memoNum },
+            { $set: { memoContext: req.body.memoContext }},
             { new : true }
         )
 
@@ -91,8 +85,8 @@ exports.rewriteMemo = async(req, res, next) => {
 exports.paintMemo = async(req, res, next) => {
     try { 
         const paintMemo = await memoModel.findOneAndUpdate(
-            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
-            { $set: { bgColor: req.params.bgColor }},
+           { userId: req.body.userId, memoNum: req.body.memoNum },
+            { $set: { bgColor: req.body.bgColor }},
             { new : true }
         )
 
@@ -108,9 +102,9 @@ exports.paintMemo = async(req, res, next) => {
 
 exports.changeLockStateMemo = async(req, res, next) => {
     try { 
-        if(req.params.memoLocked){
+        if(req.body.memoLocked){
             const lockMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoLocked: true }},
                 { new: true })
             if (lockMemo) 
@@ -119,7 +113,7 @@ exports.changeLockStateMemo = async(req, res, next) => {
                 res.status(404).send();
         } else {
             const unlockMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoLocked: false }},
                 { new: true }
             )
@@ -136,9 +130,9 @@ exports.changeLockStateMemo = async(req, res, next) => {
 
 exports.changeMarkStateMemo = async(req, res, next) => {
     try { 
-        if(req.params.memoImport){
+        if(req.body.memoImport){
             const markMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoImport: true }},
                 { new: true })
             if (markMemo) 
@@ -147,7 +141,7 @@ exports.changeMarkStateMemo = async(req, res, next) => {
                 res.status(404).send();
         } else {
             const unmarkMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoImport: false }},
                 { new: true }
             )
@@ -164,9 +158,9 @@ exports.changeMarkStateMemo = async(req, res, next) => {
 
 exports.throwOrRestoreMemo = async(req, res, next) => {
     try { 
-        if(req.params.memoTrash){
+        if(req.body.memoTrash){
             const throwMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoTrash: true }},
                 { new: true })
             if (throwMemo) 
@@ -175,7 +169,7 @@ exports.throwOrRestoreMemo = async(req, res, next) => {
                 res.status(404).send();
         } else {
             const restoreMemo = await memoModel.findOneAndUpdate(
-                { $and: { userId: req.params.userId, memoNum: req.params.memoNum }},
+               { userId: req.body.userId, memoNum: req.body.memoNum },
                 { $set: { memoTrash: false }},
                 { new: true }
             )
@@ -194,8 +188,9 @@ exports.findWrittenMemo = async (req, res, next) => {
     try {
         // get방식을 사용할 것이기 때문에 searchWord는 쿼리문으로 받아올 것
         let searchWord = req.params.s;
+        let writter = req.params.userId;
         // find 메서드는 정규식을 이용하여 검색
-        const result = await memoModel.find({memoContext: new RegExp(searchWord, 'i')})
+        const result = await memoModel.find({userId: writter, memoContext: new RegExp(searchWord, 'i')})
         
             if(!result) {
                 res.status(404).send();
@@ -215,7 +210,7 @@ exports.findWrittenMemo = async (req, res, next) => {
 exports.deleteMemo = async (req, res, next) => {
     try {
         const delResult = await memoModel.findOneAndDelete(
-            { $and: { userId: req.params.userId, memoNum: req.params.memoNum }}
+           { userId: req.body.userId, memoNum: req.body.memoNum }
         )
             console.log("delResult", delResult);
         if(delResult)

@@ -16,7 +16,7 @@ router.post('/userRegister', userController.createUser);
 router.post('/createMemo', memoController.createMemo); // checked
 router.get('/getMemos/:userId', memoController.getMemos); // checked
 router.get('/findWrittenMemo/:s', memoController.findWrittenMemo); // checked
-router.post('/moveMemo', memoController.moveMemo);
+router.post('/moveMemo', memoController.moveMemo); // checked
 router.post('/resizeMemo', memoController.resizeMemo);
 router.post('/rewriteMemo', memoController.rewriteMemo);
 router.post('/paintMemo', memoController.paintMemo);
