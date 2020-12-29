@@ -7,18 +7,18 @@ const moment = require('moment');
 
 const userSchema = mongoose.Schema({
     
-    username : {
+    userName : {
         type : String,
         require: true,
         maxlength: 50
     },
 
-    userid : {
+    userId : {
         type: String,
         unique: 1
     },
 
-    useremail : {
+    userEmail : {
         type: String
     },
 

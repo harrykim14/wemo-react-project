@@ -14,10 +14,14 @@ exports.createMemo = async (req, res, next) => {
 }
 
 exports.getMemos = async (req, res, next) => {
-    try {
-        const writtenMemos = await memoModel.find(req.params.userId) 
-        res.status(200).json(writtenMemos);
+    try {        
+        console.log(req.params)
+        let searchFlag = {userId: req.body.userId};
+        console.log("searchFlag:", searchFlag)
+        const writtenMemos = await memoModel.find(searchFlag); 
+        res.status(200).json({success: true, memos: writtenMemos});
     } catch(error){
+        console.log("error for getMemos")
         next(error);
     }
 }
