@@ -1,20 +1,37 @@
 import React, { useState, useEffect } from 'react'
 import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
+import Axios from 'axios';
 
 function MemoPage(props) {
 
-    let exampleMemo = [
-        { height: '250px', width: '250px', x: 30, y: 70, bgColor: '#F2D7B6', 
-          memoNum : 0, memoContext: 'useState에 대해 알아보았어요', memoCategory : 'study', 
-          memoLocked: false, memoImport: true, zIndex: 50, createDate: '12월 17일'},
-        { height: '250px', width: '250px', x: 300, y: 70, bgColor: '#EBF2B6', 
-          memoNum : 1, memoContext: '다이어트는 내일부터', memoCategory : 'workout',
-          memoLocked: true, memoImport: false, zIndex: 51, createDate: '12월 17일'},
-        ]
+    // let exampleMemo = [
+    //     { height: '250px', width: '250px', x: 30, y: 70, bgColor: '#F2D7B6', 
+    //       memoNum : 0, memoContext: 'useState에 대해 알아보았어요', memoCategory : 'study', 
+    //       memoLocked: false, memoImport: true, zIndex: 50, createDate: '12월 17일'},
+    //     { height: '250px', width: '250px', x: 300, y: 70, bgColor: '#EBF2B6', 
+    //       memoNum : 1, memoContext: '다이어트는 내일부터', memoCategory : 'workout',
+    //       memoLocked: true, memoImport: false, zIndex: 51, createDate: '12월 17일'},
+    //     ]
 
     const [MemoCategory, setMemoCategory] = useState('study');
-    const [MemoProps, setMemoProps] = useState(exampleMemo);    
+    const [MemoProps, setMemoProps] = useState([]);    
+
+    useEffect(() => {    
+        let userId = {userId : localStorage.getItem('userId')}
+        
+        Axios.post('/api/getMemos', userId)
+        .then(res => {
+            // console.log(res.data)
+            if(res.data.success){
+                let allMemos = res.data.memos;
+                let filteredMemos = allMemos.filter(memo => memo.memoCategory === MemoCategory)
+                
+                console.log(filteredMemos)
+                setMemoProps(filteredMemos);
+            }
+        })        
+    },[MemoCategory]) 
 
     useEffect(() => {       
      },[MemoProps])  
@@ -88,7 +105,7 @@ function MemoPage(props) {
         let createDate = `${(now.getMonth() < 10)? '0'+(now.getMonth()+1): now.getMonth()+1}월 ${(now.getDate() < 10) ? '0'+now.getDate(): now.getDate()}일`
         console.log(createDate)
         /* 새 메모를 디폴트 위치에 생성 */
-        MemoProps.push({ height: '250px', width: '250px', 
+        MemoProps.push({ height: '250px', width: '250px', // 수정 필요: userId를 넣어야 합니다
                          x: 30, y: 30, bgColor: '#b6f2cb', 
                          memoNum : memoNum, memoContext: '새 메모', 
                          memoCategory : MemoCategory,

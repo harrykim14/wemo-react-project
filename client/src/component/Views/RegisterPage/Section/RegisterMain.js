@@ -49,12 +49,23 @@ function RegisterMain(props) {
             alert('회원약관에 동의해주세요.')
             return false;
         }
+        if(UserPassword.length < 5) {
+            alert('비밀번호는 5자리 이상이어야합니다.')
+            setUserPassword('');
+            setConfirmPassword('');
+            return false;
+        }
+        if(UserPassword !== ConfirmPassword) { 
+            alert('입력한 비밀번호가 다릅니다.');
+            setConfirmPassword('')
+            return false;
+        }      
 
         if(UserId && UserName && UserEmail && UserPassword && ConfirmPassword) {
             let body = {
-                userid : UserId,
-                username : UserName,
-                useremail : UserEmail,
+                userId : UserId,
+                userName : UserName,
+                userEmail : UserEmail,
                 password : UserPassword
             }
             Axios.post('/api/userRegister', body)
@@ -72,14 +83,6 @@ function RegisterMain(props) {
         } else {
             alert('모든 칸을 입력하셔야 회원가입을 진행하실 수 있습니다.')
         }
-        
-        if(UserPassword !== ConfirmPassword) { 
-            alert('입력한 비밀번호가 다릅니다.');
-            setConfirmPassword('')
-        }
-
-        
-
         console.log("form contexts" ,UserId, UserName, UserEmail, UserPassword, ConfirmPassword)
     }
 
