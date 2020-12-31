@@ -5,15 +5,6 @@ import Axios from 'axios';
 
 function MemoPage(props) {
 
-    // let exampleMemo = [
-    //     { height: '250px', width: '250px', x: 30, y: 70, bgColor: '#F2D7B6', 
-    //       memoNum : 0, memoContext: 'useState에 대해 알아보았어요', memoCategory : 'study', 
-    //       memoLocked: false, memoImport: true, zIndex: 50, createDate: '12월 17일'},
-    //     { height: '250px', width: '250px', x: 300, y: 70, bgColor: '#EBF2B6', 
-    //       memoNum : 1, memoContext: '다이어트는 내일부터', memoCategory : 'workout',
-    //       memoLocked: true, memoImport: false, zIndex: 51, createDate: '12월 17일'},
-    //     ]
-
     const [MemoCategory, setMemoCategory] = useState('study');
     const [MemoProps, setMemoProps] = useState([]);    
 
@@ -42,46 +33,46 @@ function MemoPage(props) {
     }
 
     const memoPropChangeHandler = (data) => {
-        console.log(data);
-        let receivedNum = parseInt(data.memoNum, 10)
+        
+        console.log(data._id);
 
         switch (data.icon) {
             case "Star": MemoProps.forEach(memo => {
-                if(memo.memoNum === receivedNum) memo.memoImport = !memo.memoImport;
+                if(memo._id === data._id) memo.memoImport = !memo.memoImport;
             })
-            setMemoProps(MemoProps);
+            setMemoProps(prevMemoProps => [...MemoProps]);
             break;
 
             case "StarBorder": MemoProps.forEach(memo => {
-                if(memo.memoNum === receivedNum) memo.memoImport = !memo.memoImport;
+                if(memo._id === data._id) memo.memoImport = !memo.memoImport;
             })
-            setMemoProps(MemoProps); 
+            setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
 
             case "Lock": MemoProps.forEach(memo => {
-                if(memo.memoNum === receivedNum) memo.memoLocked = !memo.memoLocked;
+                if(memo._id === data._id) memo.memoLocked = !memo.memoLocked;
             })
-            setMemoProps(MemoProps); 
+            setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
 
             case "LockOpen": MemoProps.forEach(memo => {
-                if(memo.memoNum === receivedNum) memo.memoLocked = !memo.memoLocked;
+                if(memo._id === data._id) memo.memoLocked = !memo.memoLocked;
             })
-            setMemoProps(MemoProps); 
+            setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
 
             case "Palette": MemoProps.forEach(memo => {
-                if(memo.memoNum === receivedNum) memo.bgColor = data.bgColor;
+                if(memo._id === data._id) memo.bgColor = data.bgColor;
                 console.log(data.bgColor)
             })
-            setMemoProps(MemoProps); 
+            setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
 
             case "Delete": 
-                let memoPropsIndex = MemoProps.findIndex(memo => memo.memoNum === receivedNum);
+                let memoPropsIndex = MemoProps.findIndex(memo => memo._id === data._id);
                 MemoProps.splice(memoPropsIndex, 1);
                 console.log(MemoProps.length);
-                setMemoProps(MemoProps); 
+                setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
         
             default:
@@ -114,18 +105,18 @@ function MemoPage(props) {
         setMemoProps(prevProps => [...MemoProps]);
     }
 
-    const PositionChangeHandle = (locX, locY, memoNum) => {
+    const PositionChangeHandle = (locX, locY, memoId) => {
         console.log("locX: ",locX," locY: ", locY, " Category:", MemoCategory)
-        let idx = MemoProps.findIndex(memo => memo.memoNum === memoNum)
-        console.log("지금 움직이는 메모 index: ", idx)
+        let idx = MemoProps.findIndex(memo => memo._id === memoId)
+        console.log("지금 움직이는 메모 id: ", memoId);
         MemoProps[idx].x = locX;
         MemoProps[idx].y = locY;
         setMemoProps(prevProps => [...MemoProps]);
     }
 
-    const SizeChangeHandle = (x, y, w, h, memoNum) => {
+    const SizeChangeHandle = (x, y, w, h, memoId) => {
         console.log("memoWidth:", w, " memoHeight:", h, " Category", MemoCategory)
-        let idx = MemoProps.findIndex(memo => memo.memoNum === memoNum)
+        let idx = MemoProps.findIndex(memo => memo._id === memoId)
         MemoProps[idx].x = x;
         MemoProps[idx].y = y;
         MemoProps[idx].width = w;

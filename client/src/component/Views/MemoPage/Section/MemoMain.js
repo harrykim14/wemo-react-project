@@ -16,9 +16,9 @@ function MemoMain(props) {
 
     /* 메모 상단 아이콘 이벤트 핸들러: memoNum과 클릭한 아이콘의 클래스명을 부모객체로 넘겨줌 */
     const memoMenuHandler = (e) => {
-        let memoNum = e.currentTarget.getAttribute('value');
+        let memoId = e.currentTarget.getAttribute('value');
         let iconClassName = e.currentTarget.getAttribute('class').split(' ')[1];
-        props.memoPropChange({memoNum: memoNum, icon:iconClassName});
+        props.memoPropChange({_id: memoId, icon:iconClassName});
     }
 
     /* 팔레트 모달창을 열고 닫기, 팔레트 아이콘으로도 x버튼으로도 닫을 수 있게 함 */
@@ -29,8 +29,8 @@ function MemoMain(props) {
             return false
         }
 
-        let memoNum = e.currentTarget.getAttribute('value');
-        setModalProps({x: e.clientX-100, y: e.clientY+20, memoNum:memoNum})
+        let memoId = e.currentTarget.getAttribute('value');
+        setModalProps({x: e.clientX-100, y: e.clientY+20, _id:memoId})
         setPaletteModal(!PaletteModal)
     }
 
@@ -39,7 +39,7 @@ function MemoMain(props) {
         let getDivStyle = e.currentTarget.getAttribute('style').split(':');
         let thisColor = getDivStyle[getDivStyle.length-1].replace( /[^%,.\d]/g, "" ).split(',').map(num => parseInt(num,10).toString(16)).join('')
         setPaletteModal(!PaletteModal)
-        props.memoPropChange({memoNum: ModalProps.memoNum, icon:"Palette", bgColor: `#${thisColor}`});
+        props.memoPropChange({_id: ModalProps._id, icon:"Palette", bgColor: `#${thisColor}`});
     }
     
     /* 부모 객체에서 변경되면 다시 memoProps 배열을 받아 map함수로 렌더 */
@@ -57,24 +57,24 @@ function MemoMain(props) {
             if(e.target.value || e.target.getAttribute('class') === 'MuiButton-label') return e.preventDefault();
             // drag하는 대상이 textarea일 경우(text가 어떤식으로든 있는 객체일 경우 string 값이 e.target.value로 들어옴) 이벤트를 취소
             // 혹은 메모 저장 버튼(받아오는 class가 MuiButton-label)일 경우에도 이벤트를 취소
-            props.PositionChangeHandle(d.x, d.y, item.memoNum) }}
+            props.PositionChangeHandle(d.x, d.y, item._id) }}
          onResizeStop={(e, d, ref, delta, position) => {
-            props.SizeChangeHandle(position.x, position.y, ref.style.width, ref.style.height, item.memoNum)             
+            props.SizeChangeHandle(position.x, position.y, ref.style.width, ref.style.height, item._id)             
          }}>  
             <span>{item.createDate}</span>
             <span style={{float:'right'}}>
             
             {item.memoImport ?
-            <StarIcon value = {item.memoNum} className = "Star" onClick = {memoMenuHandler} /> :
-            <StarBorderIcon value = {item.memoNum} className = "StarBorder" onClick = {memoMenuHandler} />}
+            <StarIcon value = {item._id} className = "Star" onClick = {memoMenuHandler} /> :
+            <StarBorderIcon value = {item._id} className = "StarBorder" onClick = {memoMenuHandler} />}
 
             {item.memoLocked ? 
-            <LockIcon value = {item.memoNum} className = "Lock" onClick = {memoMenuHandler} /> :
-            <LockOpenIcon value = {item.memoNum} className = "LockOpen" onClick = {memoMenuHandler} />}
+            <LockIcon value = {item._id} className = "Lock" onClick = {memoMenuHandler} /> :
+            <LockOpenIcon value = {item._id} className = "LockOpen" onClick = {memoMenuHandler} />}
 
-            <PaletteIcon value = {item.memoNum} className = "Palette" onClick ={paletteDisplayHandler} />
+            <PaletteIcon value = {item._id} className = "Palette" onClick ={paletteDisplayHandler} />
                      
-            <DeleteIcon value = {item.memoNum} className = "Delete" onClick = {memoMenuHandler} />
+            <DeleteIcon value = {item._id} className = "Delete" onClick = {memoMenuHandler} />
             </span><br/>
                  
             <textarea defaultValue={item.memoContext} />
