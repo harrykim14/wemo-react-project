@@ -10,63 +10,87 @@ function RegisterMain(props) {
     let history = useHistory();
     const [UserId, setUserId] = useState('');
     const [UserName, setUserName] = useState('');
-    const [UserEmail, setUserEamil] = useState('');
     const [UserPassword, setUserPassword] = useState('');
-    const [ConfirmPassword, setConfirmPassword] = useState('');
+    const [PhoneNumber, setPhoneNumber] = useState('');
     const [TermAgreement, setTermAgreement] = useState(false);
-    // const [CheckPassword, setCheckPassword] = useState('암호를 입력해주세요.')
+    const [isConfirmed, setIsConfirmed] = useState(false);
 
     const handleUserIDInput = (event) => {
         setUserId(event.currentTarget.value)
+        // 입력한 내용을 지우고 다시 입력하게 되면 isConfirm값을 false로 변경해주어야 함
+        setIsConfirmed(false);
     } 
     const handleUserNameInput = (event) => {
         setUserName(event.currentTarget.value)
     } 
-    const handleUserEmailInput = (event) => {
-        setUserEamil(event.currentTarget.value)
-    } 
     const handleUserPasswordInput = (event) => {
         setUserPassword(event.currentTarget.value)
     } 
-    const handleConfirmPasswordInput = (event) => {
-        setConfirmPassword(event.currentTarget.value)
-        // checkPasswordInputs()
+    const handlePhoneNumberInput = (event) => {
+        setPhoneNumber(event.currentTarget.value)
+    }
+    const isIdUnique = (event) => {
+        if (UserId.length === 0) {
+            alert("아이디를 입력해주세요.")
+            return false;
+        }
+
+        const regExp = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+        if (regExp.test(UserId)){
+            // DB에서 id 중복 검사
+            Axios.post('/api/isUniqueId', {userId: UserId})
+                .then(response => { 
+                    console.log(response.data)
+                    if(response.data.success) {
+                        if(response.data.findUserId.length>0){
+                            alert("중복된 아이디입니다 다시 입력해주세요");
+                            setUserId('');
+                        } else {
+                            setIsConfirmed(true);
+                        }
+                    } else {
+                        // 있으면 다시 입력해달라고 하고 return false
+                        alert("아이디 검사에 실패하였습니다. 다시 시도해주세요.")
+                    }
+                }) 
+        } else {
+            alert("이메일 형식에 맞춰 입력해주세요.")
+            return false;
+        } 
     }
 
     const termCheckhandler = () => {
         setTermAgreement(!TermAgreement)
     }
-    // const checkPasswordInputs = () => {
-    //     if(UserPassword.length > 0 && UserPassword === ConfirmPassword){
-    //         setCheckPassword('입력한 두 암호가 일치합니다.')
-    //     } else {
-    //         setCheckPassword('암호를 올바르게 두 번 입력 해 주세요.')
-    //     }
-    // }
+    
     const registerUserFunction = (event) => {
         event.preventDefault();
         if(!TermAgreement) {
             alert('회원약관에 동의해주세요.')
             return false;
         }
-        if(UserPassword.length < 5) {
-            alert('비밀번호는 5자리 이상이어야합니다.')
-            setUserPassword('');
-            setConfirmPassword('');
+        if(!isConfirmed) {
+            alert('ID 중복검사가 필요합니다')
             return false;
         }
-        if(UserPassword !== ConfirmPassword) { 
-            alert('입력한 비밀번호가 다릅니다.');
-            setConfirmPassword('')
+        if(UserPassword.length < 8) {
+            alert('비밀번호는 8자 이상이어야합니다.')
+            setUserPassword('');
             return false;
-        }      
+        }  
 
-        if(UserId && UserName && UserEmail && UserPassword && ConfirmPassword) {
+        const regExp = /^01(?:0|1|[6-9])(?:\d{3}|\d{4})\d{4}$/;
+        if(!regExp.test(PhoneNumber) || PhoneNumber.length < 11){
+            alert("형식에 맞는 핸드폰 번호를 입력해주세요")
+            return false;
+        }
+
+        if(UserId && UserName &&  UserPassword && PhoneNumber) {
             let body = {
-                userId : UserId,
+                userId : UserId,               
+                password : UserPassword,
                 userName : UserName,
-                userEmail : UserEmail,
-                password : UserPassword
+                phoneNumber : PhoneNumber
             }
             Axios.post('/api/userRegister', body)
                 .then(response => {
@@ -75,7 +99,7 @@ function RegisterMain(props) {
                         alert('회원가입에 성공하였습니다. 로그인 페이지로 이동합니다.')
                         setTimeout(() => {                            
                             history.push('/')
-                        }, 2000);
+                        }, 1000);
                     } else {
                         alert('회원가입에 실패하였습니다. 다시 시도해주세요.')
                     }
@@ -83,7 +107,7 @@ function RegisterMain(props) {
         } else {
             alert('모든 칸을 입력하셔야 회원가입을 진행하실 수 있습니다.')
         }
-        console.log("form contexts" ,UserId, UserName, UserEmail, UserPassword, ConfirmPassword)
+        console.log("form contexts" ,UserId, UserName, UserPassword, PhoneNumber)
     }
 
     return (
@@ -97,17 +121,36 @@ function RegisterMain(props) {
             flexWrap: 'row wrap'
         }}>            
             <div style ={{ margin:'5vh 5vh 0vh 15vh'}}>
-                <form method="post" onSubmit = {registerUserFunction} >
-                    <TextField label="아이디" onChange = {handleUserIDInput} value={UserId} required/>
-                    <Button variant="outlined">중복확인</Button><br/><br/>
-                    <TextField label="사용자 이름" onChange = {handleUserNameInput} value = {UserName} required/><br/><br/>
-                    <TextField label="이메일 주소" onChange = {handleUserEmailInput} value = {UserEmail} required /><br/><br/>
-                    <TextField label="비밀번호" type="password" onChange = {handleUserPasswordInput} value = {UserPassword}  required />
-                    <br/><br/>
-                    <TextField label="비밀번호 확인" type="password" 
-                               onChange = {handleConfirmPasswordInput} 
-                               value = {ConfirmPassword}  required />
-                    <br/><span>{/*CheckPassword*/}</span><br/><br/>
+                <form method="post" onSubmit = {registerUserFunction}>
+                    <TextField label="아이디(이메일 주소)" 
+                               onChange = {handleUserIDInput} 
+                               value={UserId} required/>
+
+                    <Button variant="outlined" 
+                            style={isConfirmed ? {background: "pink", fontWeight:"700"} : { background: "#dddddd" }}
+                            onClick={isIdUnique}>
+                    중복확인
+                    </Button><br/>
+                    <span>이메일 주소를 입력해주세요</span>
+                    <br/>
+                    <TextField label="비밀번호" type="password" 
+                               onChange = {handleUserPasswordInput}
+                               value = {UserPassword} required/>
+                    <br/>
+                    <span>비밀번호는 최소 8자리 이상 입력해주세요</span>
+                    <br/>
+                    <TextField label="사용자 이름" 
+                               onChange = {handleUserNameInput} 
+                               value = {UserName} required/>
+                    <br/>
+                    <span>이름을 입력해주세요</span>
+                    <br/>                   
+                    <TextField label="핸드폰 번호" 
+                               onChange = {handlePhoneNumberInput} 
+                               value = {PhoneNumber} required/>
+                    <br/>
+                    <span>핸드폰 번호 13자리를 입력해주세요</span>
+                    <br/><br/><br/>
                     <Button variant="outlined" type="submit" onClick={registerUserFunction}>회원가입</Button>&nbsp;
                     <Button variant="outlined" href ='/'>돌아가기</Button>
                 </form>

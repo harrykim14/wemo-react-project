@@ -32,10 +32,11 @@ function LoginMain(props) {
             userId: UserId, password: UserPassword
         }
         Axios.post('/api/login', data4Login)
-            .then(res => {
+            .then(res => { 
+                console.log(res.data);
                 // 맞다면 props.history.push()로 main페이지로 날리기
                 if(res.data.loginSuccess){
-                    window.localStorage.setItem('userId', UserId);
+                    window.localStorage.setItem('userId', res.data.userId);
                     history.push('/main');
                 } else {
                      // 아니라면 뭐가 틀렸는지 알려주기 (아이디가 없습니다 or 패스워드가 틀렸습니다 등)
