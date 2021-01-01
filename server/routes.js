@@ -11,6 +11,7 @@ router.get('/:productId', productController.getProductById);
 router.put('/:productId', productController.updateProduct);
 router.delete('/:productId', productController.deleteProduct);
 */
+router.post('/isUniqueId', userController.isUniqueId)
 router.post('/userRegister', userController.createUser);
 router.post('/login', userController.login);
 

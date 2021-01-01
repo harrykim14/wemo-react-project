@@ -2,12 +2,8 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const memoSchema = mongoose.Schema({
-    userId: {
-        type : String,
-        required: true
-    },
-    memoNum: {
-        type: Number
+    writer: {
+        type : mongoose.SchemaTypes.ObjectId
     },
     memoCategory : {
         type: String,
@@ -58,6 +54,6 @@ const memoSchema = mongoose.Schema({
     }
 })
 
-const Memo = mongoose.model("WemoMemos", memoSchema);
+const Memo = mongoose.model("wemoMemos", memoSchema);
 
 module.exports = Memo;

@@ -6,7 +6,7 @@ exports.createMemo = async (req, res, next) => {
     try {
     const createMemo = await memoModel.create(req.body);
     // console.log("createMemo", createMemo)
-    res.status(201).json(createMemo)
+    res.status(201).json({success: true, createMemo})
     // 객체 데이터들은 대부분 json형식으로 send하게 된다
     } catch (error) {
         next(error);
@@ -15,9 +15,7 @@ exports.createMemo = async (req, res, next) => {
 
 exports.getMemos = async (req, res, next) => {
     try {        
-        console.log(req.params)
-        let searchFlag = {userId: req.body.userId};
-        console.log("searchFlag:", searchFlag)
+        let searchFlag = {writer: req.body.userId};
         const writtenMemos = await memoModel.find(searchFlag); 
         res.status(200).json({success: true, memos: writtenMemos});
     } catch(error){
