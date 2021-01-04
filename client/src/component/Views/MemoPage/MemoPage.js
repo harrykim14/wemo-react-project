@@ -1,14 +1,22 @@
 import React, { useState, useEffect } from 'react'
+import { useHistory } from "react-router-dom";
 import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
 import Axios from 'axios';
 
 function MemoPage(props) {
 
+    let history = useHistory();
     const [MemoCategory, setMemoCategory] = useState('study');
-    const [MemoProps, setMemoProps] = useState([]);    
+    const [MemoProps, setMemoProps] = useState([]);
+    const [LogoutPage, setLogoutPage] = useState(false);    
 
-    useEffect(() => {    
+    useEffect(() => {
+        if (MemoCategory === 'logout') {
+            setLogoutPage(true)
+            return false
+        }
+
         let userId = {userId : localStorage.getItem('userId')}
         
         Axios.post('/api/getMemos', userId)
@@ -151,6 +159,21 @@ function MemoPage(props) {
              })        
     }
 
+    const logoutHandler = () => {
+        let userId = localStorage.getItem('userId');
+        console.log("로그아웃", userId)
+        Axios.post('/api/logout', {_id : userId})
+            .then(res => {
+                if(res.data.logoutSuccess) { 
+                    console.log("로그아웃 성공")
+                    localStorage.removeItem('userId');
+                    history.push('/');
+                } else {
+                    console.log("로그아웃 실패")
+                }
+            })        
+    }
+
     const PositionChangeHandle = (locX, locY, memoId) => {
         
         let idx = MemoProps.findIndex(memo => memo._id === memoId);
@@ -187,9 +210,15 @@ function MemoPage(props) {
         <div>
                 <NavBar 
                     nowCategory={categoryHandler}
-                    newMemoHandler ={newMemoHandler}
+                    newMemoHandler={newMemoHandler}
+                    logoutHandler={logoutHandler}
                 />
             <div style = {{ height: '85vh'}}>
+            {LogoutPage ?
+                <div style={{textAlign:'center', justifyContent:'center'}}>
+                    로그아웃을 진행하시려면 나가기를 클릭하세요
+                </div>
+                :
                 <MemoMain 
                     memoCategory={MemoCategory} 
                     memoProps={MemoProps}
@@ -197,6 +226,7 @@ function MemoPage(props) {
                     PositionChangeHandle = {PositionChangeHandle}
                     SizeChangeHandle = {SizeChangeHandle}
                 />
+            }
             </div>
         </div>
     )
