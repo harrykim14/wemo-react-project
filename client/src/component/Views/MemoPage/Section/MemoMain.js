@@ -77,8 +77,12 @@ function MemoMain(props) {
             <DeleteIcon value = {item._id} className = "Delete" onClick = {memoMenuHandler} />
             </span><br/>
                  
-            <textarea defaultValue={item.memoContext} />
-            <Button className="MemoSaveButton" onClick={()=>{console.log("저장버튼 누름")}}>메모 저장</Button>
+            <textarea defaultValue={item.memoContext} 
+                      onChange={(e) => { props.memoContextHandler(e, item._id) }} />
+            <Button className="MemoSaveButton"
+                    onClick={(e) => { props.saveMemoContext(e, item._id) }}>
+                메모 저장
+            </Button>
          </Rnd> 
         ))}
 
