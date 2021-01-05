@@ -7,7 +7,7 @@
     "test": "jest",
     "start": "node server.js",
     "startnodemon": "nodemon server.js",
-    "dev": "concurrently \"npm run startnodemon\" \"npm run start --prefix ../client"
+    "dev": "concurrently \"npm run start --prefix ../client\" \"npm run startnodemon"
   },
   "author": "harrykim",
   "license": "ISC",

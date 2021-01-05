@@ -14,6 +14,7 @@ router.delete('/:productId', productController.deleteProduct);
 router.post('/isUniqueId', userController.isUniqueId)
 router.post('/userRegister', userController.createUser);
 router.post('/login', userController.login);
+router.post('/logout', userController.logout);
 
 router.post('/createMemo', memoController.createMemo); // checked
 router.post('/getMemos', memoController.getMemos); // checked

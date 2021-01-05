@@ -42,3 +42,19 @@ exports.login = async (req, res, next) => {
         next (err);
     }
 }
+
+exports.logout = async (req, res, next) => {
+    try {
+        const logoutInfo = await userModel.findByIdAndUpdate(
+            req.body._id, 
+            { $set: { token: "", tokenExp : "" }}, { new : true})
+
+            console.log("logoutInfo", logoutInfo);
+       if(logoutInfo) 
+            res.status(200).json({logoutSuccess: true});
+        else 
+            res.status(404).send();
+    } catch (err) {
+        next(err)
+    }
+}

@@ -27,19 +27,19 @@ exports.getMemos = async (req, res, next) => {
 exports.moveMemo = async(req, res, next) => {
 
     // 12-27: 쿼리문으로 직접 보내는 req.params.xxx에서 req.body로 변경, 나중엔 memoNum에서 memoId로 변경해야 함
-    let searchFlag = { userId: req.body.userId, memoNum: req.body.memoNum }
+    // 01-01: searchFlag대신 ObjectId를 사용함으로써 findOneAndUpdate대신 findByIdAndUpdate로 변경
     // Mongoose 업데이트로 $and 쿼리가 사라짐
     let setProps = { $set: {  x: req.body.x, y: req.body.y}};
 
     try{
-        const  updateMemoLocation = await memoModel.findOneAndUpdate(
-            searchFlag,
+        const  updateMemoLocation = await memoModel.findByIdAndUpdate(
+            req.body.memoId,
             setProps, // 상동
             { new: true }
         )
 
         if(updateMemoLocation) 
-            res.status(200).json(updateMemoLocation) 
+            res.status(200).json({success: true, updateMemoLocation}) 
         else 
             res.status(404).send()
 
@@ -50,14 +50,14 @@ exports.moveMemo = async(req, res, next) => {
 
 exports.resizeMemo = async(req, res, next) => {
     try{
-        const updateMemoSize = await memoModel.findOneAndUpdate(
-           { userId: req.body.userId, memoNum: req.body.memoNum },
+        const updateMemoSize = await memoModel.findByIdAndUpdate(
+           req.body.memoId,
             { $set: { height: req.body.height, width: req.body.width }},
             { new: true }
         )
 
         if(updateMemoSize) 
-            res.status(200).json(updateMemoSize) 
+            res.status(200).json({success: true, updateMemoSize}) 
         else
             res.status(404).send()
 
@@ -68,14 +68,14 @@ exports.resizeMemo = async(req, res, next) => {
 
 exports.rewriteMemo = async(req, res, next) => {
     try { 
-        const updateMemoContext = await memoModel.findOneAndUpdate(
-           { userId: req.body.userId, memoNum: req.body.memoNum },
+        const updateMemoContext = await memoModel.findByIdAndUpdate(
+           req.body.memoId,
             { $set: { memoContext: req.body.memoContext }},
             { new : true }
         )
 
         if(updateMemoContext) 
-            res.status(200).json(updateMemoContext)
+            res.status(200).json({rewriteSuccess: true, updateMemoContext})
         else 
             res.status(404).send()
 
@@ -86,14 +86,14 @@ exports.rewriteMemo = async(req, res, next) => {
 
 exports.paintMemo = async(req, res, next) => {
     try { 
-        const paintMemo = await memoModel.findOneAndUpdate(
-           { userId: req.body.userId, memoNum: req.body.memoNum },
+        const paintMemo = await memoModel.findByIdAndUpdate(
+           req.body.memoId,
             { $set: { bgColor: req.body.bgColor }},
             { new : true }
         )
 
         if(paintMemo) 
-            res.status(200).json(paintMemo)
+            res.status(200).json({success: true, paintMemo})
         else 
             res.status(404).send()
 
@@ -105,22 +105,23 @@ exports.paintMemo = async(req, res, next) => {
 exports.changeLockStateMemo = async(req, res, next) => {
     try { 
         if(req.body.memoLocked){
-            const lockMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
+            const lockMemo = await memoModel.findByIdAndUpdate(
+                req.body.memoId,
                 { $set: { memoLocked: true }},
                 { new: true })
+
             if (lockMemo) 
-                res.status(200).json(lockMemo);
+                res.status(200).json({success: true, lockMemo});
             else 
                 res.status(404).send();
         } else {
-            const unlockMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
+            const unlockMemo = await memoModel.findByIdAndUpdate(
+                req.body.memoId,
                 { $set: { memoLocked: false }},
-                { new: true }
-            )
+                { new: true })
+
             if(unlockMemo)
-                res.status(200).json(unlockMemo);
+                res.status(200).json({success: true, unlockMemo});
             else 
                 res.status(404).send();
         }
@@ -133,22 +134,22 @@ exports.changeLockStateMemo = async(req, res, next) => {
 exports.changeMarkStateMemo = async(req, res, next) => {
     try { 
         if(req.body.memoImport){
-            const markMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
-                { $set: { memoImport: true }},
-                { new: true })
+            const markMemo = await memoModel.findByIdAndUpdate(
+               req.body.memoId,
+               { $set: { memoImport: true }},
+               { new: true })
             if (markMemo) 
-                res.status(200).json(markMemo);
+                res.status(200).json({success: true, markMemo});
             else 
                 res.status(404).send();
         } else {
-            const unmarkMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
+            const unmarkMemo = await memoModel.findByIdAndUpdate(
+                req.body.memoId,
                 { $set: { memoImport: false }},
                 { new: true }
             )
             if(unmarkMemo)
-                res.status(200).json(unmarkMemo);
+                res.status(200).json({success: true, unmarkMemo});
             else 
                 res.status(404).send();
         }
@@ -161,22 +162,22 @@ exports.changeMarkStateMemo = async(req, res, next) => {
 exports.throwOrRestoreMemo = async(req, res, next) => {
     try { 
         if(req.body.memoTrash){
-            const throwMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
+            const throwMemo = await memoModel.findByIdAndUpdate(
+               req.body.memoId,
                 { $set: { memoTrash: true }},
                 { new: true })
             if (throwMemo) 
-                res.status(200).json(throwMemo);
+                res.status(200).json({success: true, throwMemo});
             else 
                 res.status(404).send();
         } else {
-            const restoreMemo = await memoModel.findOneAndUpdate(
-               { userId: req.body.userId, memoNum: req.body.memoNum },
+            const restoreMemo = await memoModel.findByIdAndUpdate(
+                req.body.memoId,
                 { $set: { memoTrash: false }},
                 { new: true }
             )
             if(restoreMemo)
-                res.status(200).json(restoreMemo);
+                res.status(200).json({success: true, restoreMemo});
             else 
                 res.status(404).send();
         }
