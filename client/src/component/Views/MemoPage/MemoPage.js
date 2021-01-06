@@ -15,22 +15,60 @@ function MemoPage(props) {
         if (MemoCategory === 'logout') {
             setLogoutPage(true)
             return false
-        }
+        } else if (MemoCategory === 'trash') {
+            setLogoutPage(false);
+            setMemoProps([]);
 
-        let userId = {userId : localStorage.getItem('userId')}
+            let userId = {userId : localStorage.getItem('userId')}
+
+            let allMemos = [];
+            Axios.post('/api/getMemos', userId)
+                .then(res => {
+                    if(res.data.success){
+                        allMemos = res.data.memos;
+                    }
+                    let trashedMemo = allMemos.filter(memo => memo.memoTrash === true)
+                    setMemoProps(trashedMemo);
+                })
+
+        } else if (MemoCategory === 'important'){ 
+            setLogoutPage(false);
+            setMemoProps([]);
+
+            let userId = {userId : localStorage.getItem('userId')}
+
+            let allMemos = [];
+            Axios.post('/api/getMemos', userId)
+                .then(res => {
+                    if(res.data.success){
+                        allMemos = res.data.memos;
+                    }
+                    let importantMemo = allMemos.filter(memo => memo.memoImport === true)
+                    setMemoProps(importantMemo);
+                })
+        } else { 
+            setLogoutPage(false);
+            setMemoProps([]);
+            
+            let userId = {userId : localStorage.getItem('userId')}
         
-        // 01-05: filter 처리한 메모가 다른 카테고리에서도 적용되는 버그 발견 (수정 필요)
-        Axios.post('/api/getMemos', userId)
-            .then(res => {
-                if(res.data.success){
-                    let allMemos = res.data.memos;
+            // 01-05: filter 처리한 메모가 다른 카테고리에서도 적용되는 버그 발견
+            // 01-06: MemoProps를 useEffect로 다시 렌더링 될 때 처음 빈 배열로 초기화 하면 해결됨
+        
+            let allMemos = [];
+            Axios.post('/api/getMemos', userId)
+                .then(res => {
+                    if(res.data.success){
+                        allMemos = res.data.memos;
+                    }
                     let filteredMemos = allMemos.filter(memo => memo.memoCategory === MemoCategory && memo.memoTrash === false)
-                    setMemoProps(prevMemoProps => [...filteredMemos]);
-                }
-            })        
+                    setMemoProps(filteredMemos);
+                })
+
+            }
     },[MemoCategory]) 
 
-    useEffect(() => {      
+    useEffect(() => {
      },[MemoProps])  
 
     const categoryHandler = (nowCategory) => {

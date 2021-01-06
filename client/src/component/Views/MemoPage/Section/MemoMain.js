@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Rnd } from 'react-rnd';
 import DeleteIcon from '@material-ui/icons/Delete';
 import PaletteIcon from '@material-ui/icons/Palette';
@@ -13,6 +13,10 @@ import './MemoMain.css';
 function MemoMain(props) { 
     const [PaletteModal, setPaletteModal] = useState(false)
     const [ModalProps, setModalProps] = useState({x : 0, y: 0, memoNum: null})
+
+    useEffect(() => {
+
+    }, [props.memoCategory])
 
     /* 메모 상단 아이콘 이벤트 핸들러: memoNum과 클릭한 아이콘의 클래스명을 부모객체로 넘겨줌 */
     const memoMenuHandler = (e) => {
@@ -44,7 +48,6 @@ function MemoMain(props) {
     
     /* 부모 객체에서 변경되면 다시 memoProps 배열을 받아 map함수로 렌더 */
     const memoRender = (memoProps) => {
-        console.log("memoRender()중 카테고리:", props.memoCategory)
         return memoProps.map((item, idx) => (
         <Rnd
          key={idx}
