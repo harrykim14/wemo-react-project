@@ -15,8 +15,7 @@ exports.createMemo = async (req, res, next) => {
 
 exports.getMemos = async (req, res, next) => {
     try {        
-        let searchFlag = {writer: req.body.userId};
-        const writtenMemos = await memoModel.find(searchFlag); 
+        const writtenMemos = await memoModel.find({ writer: req.params.userId }); 
         res.status(200).json({success: true, memos: writtenMemos});
     } catch(error){
         console.log("error for getMemos")
@@ -212,12 +211,11 @@ exports.findWrittenMemo = async (req, res, next) => {
 
 exports.deleteMemo = async (req, res, next) => {
     try {
-        const delResult = await memoModel.findOneAndDelete(
-           { userId: req.body.userId, memoNum: req.body.memoNum }
-        )
-            console.log("delResult", delResult);
+        console.log("deleteMemo")
+        const delResult = await memoModel.findByIdAndDelete(req.params.memoId)
+
         if(delResult)
-            res.status(200).json(delResult)
+            res.status(200).json({success: true, delResult})
         else 
             res.status(404).send();
 
