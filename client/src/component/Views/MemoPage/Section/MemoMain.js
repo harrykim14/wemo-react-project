@@ -60,9 +60,9 @@ function MemoMain(props) {
             if(e.target.getAttribute('d')) return e.preventDefault();
             // drag하는 대상이 textarea일 경우(text가 어떤식으로든 있는 객체일 경우 string 값이 e.target.value로 들어옴) 이벤트를 취소
             // 혹은 메모 저장 버튼(받아오는 class가 MuiButton-label)일 경우에도 이벤트를 취소
-            props.PositionChangeHandle(d.x, d.y, item._id) }}
+            props.positionChangeHandle(d.x, d.y, item._id) }}
          onResizeStop={(e, d, ref, delta, position) => {
-            props.SizeChangeHandle(position.x, position.y, ref.style.width, ref.style.height, item._id)             
+            props.sizeChangeHandle(position.x, position.y, ref.style.width, ref.style.height, item._id)             
          }}>  
             <span>{item.createDate}</span>
             <span style={{float:'right'}}>

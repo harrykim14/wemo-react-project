@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom";
 import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
+import LogoutMain from './Section/LogoutMain';
+import AnalysisMain from './Section/AnalysisMain';
 import Axios from 'axios';
 
 function MemoPage(props) {
@@ -9,63 +11,28 @@ function MemoPage(props) {
     let history = useHistory();
     const [MemoCategory, setMemoCategory] = useState('study');
     const [MemoProps, setMemoProps] = useState([]);
+    const [AnalysisPage, setAnalysisPage] = useState(false);
     const [LogoutPage, setLogoutPage] = useState(false);    
 
     useEffect(() => {
-        if (MemoCategory === 'logout') {
-            setLogoutPage(true)
-            return false
-        } else if (MemoCategory === 'trash') {
-            setLogoutPage(false);
-            setMemoProps([]);
 
-            let userId = {userId : localStorage.getItem('userId')}
-
-            let allMemos = [];
-            Axios.post('/api/getMemos', userId)
+    /*
+        // 01-05: filter 처리한 메모가 다른 카테고리에서도 적용되는 버그 발견
+        // 01-06: MemoProps를 useEffect로 다시 렌더링 될 때 처음 빈 배열로 초기화 하면 해결됨
+        // 01-07: getMemos를 post방식에서 get 방식으로 변경
+        // 01-07: 공통부분을 바깥에서 처리하게 변경하고 카테고리에 따라 필터링하는 함수를 분리함
+    */
+        let userId = localStorage.getItem('userId')
+    
+        Axios.get(`/api/getMemos/${userId}`)
                 .then(res => {
+                    let allMemos = [];
                     if(res.data.success){
                         allMemos = res.data.memos;
-                    }
-                    let trashedMemo = allMemos.filter(memo => memo.memoTrash === true)
-                    setMemoProps(trashedMemo);
+                        filterMemosByCategory(allMemos)
+                    }                   
                 })
-
-        } else if (MemoCategory === 'important'){ 
-            setLogoutPage(false);
-            setMemoProps([]);
-
-            let userId = {userId : localStorage.getItem('userId')}
-
-            let allMemos = [];
-            Axios.post('/api/getMemos', userId)
-                .then(res => {
-                    if(res.data.success){
-                        allMemos = res.data.memos;
-                    }
-                    let importantMemo = allMemos.filter(memo => memo.memoImport === true)
-                    setMemoProps(importantMemo);
-                })
-        } else { 
-            setLogoutPage(false);
-            setMemoProps([]);
-            
-            let userId = {userId : localStorage.getItem('userId')}
-        
-            // 01-05: filter 처리한 메모가 다른 카테고리에서도 적용되는 버그 발견
-            // 01-06: MemoProps를 useEffect로 다시 렌더링 될 때 처음 빈 배열로 초기화 하면 해결됨
-        
-            let allMemos = [];
-            Axios.post('/api/getMemos', userId)
-                .then(res => {
-                    if(res.data.success){
-                        allMemos = res.data.memos;
-                    }
-                    let filteredMemos = allMemos.filter(memo => memo.memoCategory === MemoCategory && memo.memoTrash === false)
-                    setMemoProps(filteredMemos);
-                })
-
-            }
+    // eslint-disable-next-line
     },[MemoCategory]) 
 
     useEffect(() => {
@@ -73,6 +40,26 @@ function MemoPage(props) {
 
     const categoryHandler = (nowCategory) => {
         setMemoCategory(prevCategory => nowCategory);
+    }
+
+    function filterMemosByCategory (allMemos) {
+
+        setLogoutPage(false);
+        setAnalysisPage(false);
+        setMemoProps([]);
+
+        if (MemoCategory === 'logout') {
+            setLogoutPage(true);
+        } else if (MemoCategory === 'analysis') {
+            setAnalysisPage(true);
+        } else if (MemoCategory === 'trash') {       
+            setMemoProps(allMemos.filter(memo => memo.memoTrash === true));
+        } else if (MemoCategory === 'important'){ 
+            setMemoProps(allMemos.filter(memo => memo.memoImport === true));
+        } else { 
+            setMemoProps(allMemos.filter(memo => memo.memoCategory === MemoCategory 
+                                              && memo.memoTrash === false));
+        }
     }
 
     const memoPropChangeHandler = (data) => {
@@ -144,19 +131,21 @@ function MemoPage(props) {
             break;
 
             case "Delete": 
-                if(MemoCategory !== "trash") { 
+                if(MemoCategory === "trash") { 
+                    Axios.delete(`/api/deleteMemo/${data._id}`)
+                        .then(res => {
+                            if(res.data.success) console.log("메모를 완전 삭제하였습니다")
+                        })
+                } else {
                     let deleteObj = { memoId: data._id, memoTrash: true }
                     Axios.post('/api/throwOrRestore', deleteObj)
                         .then(res => {
                             if(res.data.success) console.log("메모를 휴지통으로 이동시켰습니다")
                         })
-
-                    let memoPropsIndex =indexFinder(data._id)
-                    MemoProps.splice(memoPropsIndex, 1);
-                    setMemoProps(prevMemoProps => [...MemoProps]); 
-                } else {
-                    return false;
                 }
+                let memoPropsIndex =indexFinder(data._id)
+                MemoProps.splice(memoPropsIndex, 1);
+                setMemoProps(prevMemoProps => [...MemoProps]); 
             break;
         
             default:
@@ -217,7 +206,7 @@ function MemoPage(props) {
             })        
     }
 
-    const PositionChangeHandle = (locX, locY, memoId) => {
+    const positionChangeHandle = (locX, locY, memoId) => {
         
         let idx = indexFinder(memoId)
         MemoProps[idx].x = locX;
@@ -232,7 +221,7 @@ function MemoPage(props) {
              })        
     }
 
-    const SizeChangeHandle = (x, y, w, h, memoId) => {
+    const sizeChangeHandle = (x, y, w, h, memoId) => {
 
         let idx = indexFinder(memoId)
         MemoProps[idx].x = x;
@@ -270,27 +259,23 @@ function MemoPage(props) {
 
     return (
         <div>
-                <NavBar 
-                    nowCategory={categoryHandler}
-                    newMemoHandler={newMemoHandler}
-                    logoutHandler={logoutHandler}
-                />
+            <NavBar 
+             nowCategory={categoryHandler}
+             newMemoHandler={newMemoHandler}
+             logoutHandler={logoutHandler}
+            />
             <div style = {{ height: '85vh'}}>
-            {LogoutPage ?
-                <div style={{textAlign:'center', justifyContent:'center'}}>
-                    로그아웃을 진행하시려면 나가기를 클릭하세요
-                </div>
-                :
-                <MemoMain 
-                    memoCategory={MemoCategory} 
-                    memoProps={MemoProps}
-                    memoPropChange={memoPropChangeHandler}  
-                    memoContextHandler={memoContextHandler}                  
-                    saveMemoContext={saveMemoContext}
-                    PositionChangeHandle = {PositionChangeHandle}
-                    SizeChangeHandle = {SizeChangeHandle}
-                />
-            }
+            { LogoutPage ? <LogoutMain/>
+            : AnalysisPage ? <AnalysisMain memoProps={MemoProps} />
+            : <MemoMain 
+                memoCategory={MemoCategory} 
+                memoProps={MemoProps}
+                memoPropChange={memoPropChangeHandler}  
+                memoContextHandler={memoContextHandler}                  
+                saveMemoContext={saveMemoContext}
+                positionChangeHandle = {positionChangeHandle}
+                sizeChangeHandle = {sizeChangeHandle}
+               /> }
             </div>
         </div>
     )

@@ -26,14 +26,12 @@ function LoginMain(props) {
 
     const loginHandler = () => {
         if (!UserId && !UserPassword) alert('아이디와 비밀번호를 모두 입력해주세요.')
-        console.log(UserId, UserPassword);
         // axios로 db에 있는 아이디를 검색해서 맞는지 확인하기
         let data4Login = { 
             userId: UserId, password: UserPassword
         }
         Axios.post('/api/login', data4Login)
             .then(res => { 
-                console.log(res.data);
                 // 맞다면 props.history.push()로 main페이지로 날리기
                 if(res.data.loginSuccess){
                     window.localStorage.setItem('userId', res.data.userId);
