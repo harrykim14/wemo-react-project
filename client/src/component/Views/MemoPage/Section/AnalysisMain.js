@@ -1,15 +1,21 @@
 import React from 'react'
 import { Chart } from "react-google-charts";
 
-function AnalysisMain() {
+function AnalysisMain(props) {
+
     return (
-        <div className={"my-pretty-chart-container"}>
+        <div style ={{ margin: '-5% 0% auto'}}>
             <Chart
-                chartType="ScatterChart"
-                data={[["Age", "Weight"], [4, 5.5], [8, 12]]}
-                width="100%"
-                height="400px"
+                chartType="PieChart"
+                data={props.memoData}
+                width={"600px"}
+                height={"600px"}
                 legendToggle
+                options={{
+                    title: '카테고리 별 작성한 메모 수',
+                    // Just add this option
+                    is3D: true,
+                  }}
             />
         </div>
     )

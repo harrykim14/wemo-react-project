@@ -12,7 +12,8 @@ function MemoPage(props) {
     const [MemoCategory, setMemoCategory] = useState('study');
     const [MemoProps, setMemoProps] = useState([]);
     const [AnalysisPage, setAnalysisPage] = useState(false);
-    const [LogoutPage, setLogoutPage] = useState(false);    
+    const [LogoutPage, setLogoutPage] = useState(false);
+    const [MemoData, setMemoData]  = useState([]);
 
     useEffect(() => {
 
@@ -30,8 +31,9 @@ function MemoPage(props) {
                     if(res.data.success){
                         allMemos = res.data.memos;
                         filterMemosByCategory(allMemos)
-                    }                   
+                    }
                 })
+
     // eslint-disable-next-line
     },[MemoCategory]) 
 
@@ -51,6 +53,14 @@ function MemoPage(props) {
         if (MemoCategory === 'logout') {
             setLogoutPage(true);
         } else if (MemoCategory === 'analysis') {
+            // 1. 휴지통에 있는 메모를 필터링
+            let memosAnalysis = allMemos.filter(memo => memo.memoTrash === false);
+
+            // 2. 메모 수를 차트에 필요한 데이터 형태로 저장
+            let data = countWrittenMemoCategory(memosAnalysis)
+
+            // 3. 필터링된 메모를 돌며 차트에 필요한 데이터를 늘리기            
+            setMemoData(prev => data);
             setAnalysisPage(true);
         } else if (MemoCategory === 'trash') {       
             setMemoProps(allMemos.filter(memo => memo.memoTrash === true));
@@ -60,6 +70,21 @@ function MemoPage(props) {
             setMemoProps(allMemos.filter(memo => memo.memoCategory === MemoCategory 
                                               && memo.memoTrash === false));
         }
+    }
+
+    const countWrittenMemoCategory = (memosAnalysis) => {
+
+        let studyCntArr = memosAnalysis.filter(memo => memo.memoCategory === 'study')
+        let workoutCntArr = memosAnalysis.filter(memo => memo.memoCategory === 'workout')
+        let moneyCntArr = memosAnalysis.filter(memo => memo.memoCategory === 'money')
+
+        let countMemo = [
+            ['카테고리', '메모 수'],
+            ['공부', studyCntArr.length], 
+            ['운동', workoutCntArr.length], 
+            ['가계부', moneyCntArr.length]
+        ]
+        return countMemo;
     }
 
     const memoPropChangeHandler = (data) => {
@@ -266,7 +291,7 @@ function MemoPage(props) {
             />
             <div style = {{ height: '85vh'}}>
             { LogoutPage ? <LogoutMain/>
-            : AnalysisPage ? <AnalysisMain memoProps={MemoProps} />
+            : AnalysisPage ? (MemoData && <AnalysisMain memoData = {MemoData} />)
             : <MemoMain 
                 memoCategory={MemoCategory} 
                 memoProps={MemoProps}
