@@ -1,0 +1,10 @@
+.SettingBoard {
+    width: 85%;
+    height: 85%;
+    margin-left: 5%;
+}
+
+.SettingDescription {
+    font-size: 10pt;
+    font-weight: 700;
+}

@@ -4,6 +4,7 @@ import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
 import LogoutMain from './Section/LogoutMain';
 import AnalysisMain from './Section/AnalysisMain';
+import SettingMain from './Section/SettingMain';
 import Axios from 'axios';
 
 function MemoPage(props) {
@@ -12,6 +13,7 @@ function MemoPage(props) {
     const [MemoCategory, setMemoCategory] = useState('study');
     const [MemoProps, setMemoProps] = useState([]);
     const [AnalysisPage, setAnalysisPage] = useState(false);
+    const [SettingPage, setSettingPage] = useState(false);
     const [LogoutPage, setLogoutPage] = useState(false);
     const [MemoData, setMemoData]  = useState([]);
 
@@ -48,10 +50,13 @@ function MemoPage(props) {
 
         setLogoutPage(false);
         setAnalysisPage(false);
+        setSettingPage(false);
         setMemoProps([]);
 
         if (MemoCategory === 'logout') {
             setLogoutPage(true);
+        } else if(MemoCategory === 'setting') {
+            setSettingPage(true);
         } else if (MemoCategory === 'analysis') {
             // 1. 휴지통에 있는 메모를 필터링
             let memosAnalysis = allMemos.filter(memo => memo.memoTrash === false);
@@ -290,8 +295,11 @@ function MemoPage(props) {
              logoutHandler={logoutHandler}
             />
             <div style = {{ height: '85vh'}}>
-            { LogoutPage ? <LogoutMain/>
-            : AnalysisPage ? (MemoData && <AnalysisMain memoData = {MemoData} />)
+            {/* 조건문 ? true : false(조건문) 
+                ? true : false(조건문) ?  true : false */}
+            { LogoutPage ? <LogoutMain/> : AnalysisPage 
+            ? (MemoData && <AnalysisMain memoData = {MemoData} />)
+            : SettingPage ? <SettingMain/> 
             : <MemoMain 
                 memoCategory={MemoCategory} 
                 memoProps={MemoProps}
