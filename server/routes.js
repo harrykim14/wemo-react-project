@@ -11,8 +11,10 @@ router.get('/:productId', productController.getProductById);
 router.put('/:productId', productController.updateProduct);
 router.delete('/:productId', productController.deleteProduct);
 */
-router.post('/isUniqueId', userController.isUniqueId)
+router.post('/isUniqueId', userController.isUniqueId);
 router.post('/userRegister', userController.createUser);
+router.get('/findUserInfo/:userId', userController.findUserInfo);
+router.post('/updateUserSetting', userController.updateUserSetting);
 router.post('/login', userController.login);
 router.post('/logout', userController.logout);
 

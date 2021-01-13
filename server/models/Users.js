@@ -28,6 +28,15 @@ const userSchema = mongoose.Schema({
         require: true  
     },
 
+    userAutoform : {
+        type : Object,
+        defalt : {
+            UserForm1 : '',
+            UserForm2 : '',
+            UserForm3 : ''
+        }
+    },
+
     role: {
         type:Number,
         default : 0
