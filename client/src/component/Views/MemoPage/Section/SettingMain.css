@@ -4,7 +4,10 @@
     margin-left: 5%;
 }
 
+.SettingLabel {
+   font-weight: 700;
+}
+
 .SettingDescription {
     font-size: 10pt;
-    font-weight: 700;
 }

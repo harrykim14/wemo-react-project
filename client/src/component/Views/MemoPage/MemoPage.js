@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useHistory } from "react-router-dom";
+import { useHotkeys } from 'react-hotkeys-hook';
 import NavBar from '../NavBar/NavBar';
 import MemoMain from './Section/MemoMain';
 import LogoutMain from './Section/LogoutMain';
@@ -10,12 +11,56 @@ import Axios from 'axios';
 function MemoPage(props) {
 
     let history = useHistory();
+    const [UserId, setUserId] = useState('');
+    const [UserAutoform, setUserAutoform] = useState({});
     const [MemoCategory, setMemoCategory] = useState('study');
     const [MemoProps, setMemoProps] = useState([]);
     const [AnalysisPage, setAnalysisPage] = useState(false);
     const [SettingPage, setSettingPage] = useState(false);
     const [LogoutPage, setLogoutPage] = useState(false);
     const [MemoData, setMemoData]  = useState([]);
+
+    const { Userform1, Userform2, Userform3 } = UserAutoform;
+
+    useEffect(() => {
+        let userId = localStorage.getItem('userId');
+        // 첫 렌더링 시에 userId를 state로 저장하여 관리
+        setUserId(userId)
+
+        // userId로 유저 세팅 정보를 불러오고 자동완성 객체를 불러오기
+        Axios.get(`/api/findUserInfo/${userId}`)
+            .then(res => {
+                if(res.data.success) {
+                    let userInfo = res.data.user;
+                    let userSetting = { 
+                            Userform1: userInfo.userAutoform.Userform1,
+                            Userform2: userInfo.userAutoform.Userform2,
+                            Userform3: userInfo.userAutoform.Userform3 
+                        }
+                    console.log(userSetting);       
+                    setUserAutoform(userSetting)
+                }
+            })
+    }, [])
+
+    // 01-15: react-hotkeys-hook 모듈을 사용하여 유저 자동완성 폼을 클립보드로 복사하는 기능을 추가
+    useHotkeys('ctrl+space,ctrl+q,ctrl+b', (e, h) => {
+        switch (h.key) {
+            case 'ctrl+space': 
+                console.log('pressed ctrl+space!');
+                navigator.clipboard.writeText(Userform1); 
+                break;
+            case 'ctrl+q'    : 
+                console.log('pressed ctrl+q!');
+                navigator.clipboard.writeText(Userform2);
+                break;
+            case 'ctrl+b'    : 
+                console.log('pressed ctrl+b!');
+                navigator.clipboard.writeText(Userform3); 
+                break;
+            default : break;
+        }
+    })
 
     useEffect(() => {
 
